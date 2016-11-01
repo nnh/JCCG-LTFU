@@ -8,20 +8,18 @@ PATH <- dirname(dirname(frame_files[[length(frame_files)]]))
 
 setwd(paste(PATH,"/rawdata",sep=""))
 #setwd("../rawdata")
-DF <- read.csv("AML-05データ_20161011.csv",as.is=T)
-
-
+DF <- read.csv("AML-05データ_20161011.csv",as.is=T,skip=11,header=T)
+#DF <- read.csv("AML-05データ_20161011.csv",as.is=T)
 #変数名削除
-DF1 <- DF[c(2:485),]
-
-length(DF1$AML05.No.)
+#DF1 <- DF[c(2:485),]
+#length(DF1$AML05.No.)
 
 #変数名変更
 colnames(DF1) <- c("AML05No","JPLSG登録コード","事後不適格","解析対象外",
                    "診断年月日","生年月日","生年月日_入力不可_1：あり※ダミーの日付入力",
-                   "中止届有無","中止届に記載された中止日","therapy最終投薬日",
-                   "リスク",
-                   "移植有無","移植日","死亡","最終確認日")
+                  "中止届有無","中止届に記載された中止日","therapy最終投薬日",
+                  "リスク",
+                  "移植有無","移植日","死亡","最終確認日")
 
 length(DF1$AML05No)
 
