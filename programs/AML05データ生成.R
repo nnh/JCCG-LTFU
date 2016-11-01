@@ -2,7 +2,12 @@
 #Sahoko Ando
 #2016/10/11
 
-setwd("../rawdata")
+df1frame_files <- lapply(sys.frames(), function(x) x$ofile)
+frame_files <- Filter(Negate(is.null), frame_files)
+PATH <- dirname(dirname(frame_files[[length(frame_files)]]))
+
+setwd(paste(PATH,"/rawdata",sep=""))
+#setwd("../rawdata")
 DF <- read.csv("AML-05データ_20161011.csv",as.is=T)
 
 
@@ -113,7 +118,7 @@ names(merge_J05)[9] <- c("最終確認日JPLSG")
 setwd("../output")
 
 #出力する
-#write.csv(merge_J05,"//Rinken-sv2/プロトコール別/長期フォロー/LTFU/output/JP_AML05.csv",row.names=F)
+write.csv(merge_J05,"JP_AML05.csv",row.names=F)
 
 
 setwd("../programs")
