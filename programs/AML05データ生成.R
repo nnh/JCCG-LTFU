@@ -31,11 +31,8 @@ DF3 <- subset(DF2,DF2$解析対象外!=1)
 
 AML05_DF<-DF3
 
-
 #データの出力
 #write.csv(AML05_DF,"//Rinken-sv2/プロトコール別/長期フォロー/LTFU/output/AML05_DF.csv",row.names=F)
-
-
 
 #####################
 #中止届有無
@@ -90,9 +87,6 @@ length(sample_123$AML05No)
 #出力する
 #write.csv(sample_123,"//Rinken-sv2/プロトコール別/長期フォロー/LTFU/output/AML05_DF_ALL.csv",row.names=F)
 
-
-
-
 #データフレーム名の書き換え
 AML05_DF_ALL <- sample_123
 
@@ -117,6 +111,5 @@ setwd("../output")
 
 #出力する
 write.csv(merge_J05,"JP_AML05.csv",row.names=F)
-
 
 setwd("../programs")

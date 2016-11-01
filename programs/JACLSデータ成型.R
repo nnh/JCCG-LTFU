@@ -2,7 +2,11 @@
 #Mamiko Yonejima
 #2016/10/07
 
-setwd("../rawdata")
+frame_files <- lapply(sys.frames(), function(x) x$ofile)
+frame_files <- Filter(Negate(is.null), frame_files)
+PATH <- dirname(dirname(frame_files[[length(frame_files)]]))
+
+setwd(paste(PATH,"/rawdata",sep=""))
 DF <- read.csv("症例基本情報一覧(提出用)_150911pw.csv",as.is=T)
 
 #1,2行目削除
