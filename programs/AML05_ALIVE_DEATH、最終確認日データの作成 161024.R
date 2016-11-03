@@ -163,5 +163,5 @@ groupNA3$AGE_DEATH <- ""
 str1234 <- rbind(Diff3,groupNA3)
 length(str1234$JPLSG登録コード)
 
-write.csv(str1234,"//Rinken-sv2/プロトコール別/長期フォロー/LTFU/output/AML05dataset1024.csv",row.names=F)
-
+setwd(paste(PATH,"/output",sep=""))
+write.csv(str1234,"AML05dataset1024.csv",row.names=F)
