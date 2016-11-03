@@ -8,7 +8,7 @@ PATH <- dirname(dirname(frame_files[[length(frame_files)]]))
 
 setwd(paste(PATH,"/rawdata",sep=""))
 #setwd("../rawdata")
-DF <- read.csv("AML-05データ_20161011.csv",as.is=T,skip=11,header=T)
+DF1 <- read.csv("AML-05データ_20161011.csv",as.is=T,skip=11,header=T)
 #DF <- read.csv("AML-05データ_20161011.csv",as.is=T)
 #変数名削除
 #DF1 <- DF[c(2:485),]
@@ -27,7 +27,7 @@ length(DF1$AML05No)
 DF2 <- subset(DF1,DF1$事後不適格!=3)
 
 #解析対象外を外す
-DF3 <- subset(DF2,DF2$解析対象外!=1)
+DF3 <- subset(DF2,(is.na(DF2$解析対象外) | DF2$解析対象外!=1))
 
 AML05_DF<-DF3
 
@@ -67,8 +67,7 @@ sample2 <- subset(AML05_DF,AML05_DF$リスク==3 & AML05_DF$移植有無==0　& 
 sample2$終了日 <-　sample2$therapy最終投薬日
 
 #高リスク以外の人＝therapy最終投薬日
-sample3_1 <-subset(AML05_DF,AML05_DF$中止届有無!=1)#中止届が出ているものは除く
-sample3 <- subset(sample3_1,sample3_1$リスク!=3)
+sample3 <-subset(AML05_DF,AML05_DF$中止届有無!=1 & AML05_DF$リスク!=3)
 sample3$終了日 <-　sample3$therapy最終投薬日
 
 #データの出力
