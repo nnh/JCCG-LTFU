@@ -55,6 +55,7 @@ Temporary Items
 # History files
 .Rhistory
 .Rapp.history
+JCCG-LTFU.Rproj
 
 # Session Data files
 .RData
