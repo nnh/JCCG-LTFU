@@ -8,7 +8,7 @@ setwd("./rawdata")
 
 # Making File List
 list <- as.data.frame(list.files())
-list$no  <- c(1:nrow(list))
+list$no <- c(1:nrow(list))
 list$DFname <- substr(list.files(), 1, 5)
 names(list)[1] <- "file_name"
 
@@ -41,12 +41,12 @@ for (i in 1:length(AML05pick$J_CD)) {
   srt.b <- AML05pick$移植有無0.なし.1.あり[i]
   str.date <- ""
 
-  if  (str.a == 1) {
+  if (str.a == 1) {
     str.date <- AML05pick$中止届に記載された中止日 [i]
   } else if (srt.b == 1) {
     str.date <- AML05pick$移植日 [i]
   } else {
-    str.date  <- AML05pick$therapy最終投薬日[i]}
+    str.date <- AML05pick$therapy最終投薬日[i]}
 
   AML05pick$DATE_END_TRT[i]= str.date  # 結果を入れる列の指定
 }
@@ -66,7 +66,7 @@ for (i in 1:length(merge2$J_CD)){
   if (str.a == 1) {
     str.tenki <- "true"
   } else {
-    str.tenki  <- srt.b
+    str.tenki <- srt.b
   }
 
   merge2$DTHFL[i] <- str.tenki
