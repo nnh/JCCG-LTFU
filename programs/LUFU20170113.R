@@ -1,4 +1,4 @@
-# LUFU 
+# LUFU
 # mamiko yonejima
 # 2017/1/13
 #########
@@ -12,23 +12,26 @@ list$no  <- c(1:nrow(list))
 list$DFname <- substr(list.files(), 1, 5)
 names(list)[1] <- "file_name"
 
-# Read CSVdata
-for(i in 1:length(list$no)){
+# Read CSV data
+for (i in 1:length(list$no)) {
   eval(
     parse(
-      text=paste0(list$DFname[i], "<- read.csv('", list$file_name[i], "', as.is=T, fileEncoding='CP932')")
+      text = paste0(list$DFname[i], "<- read.csv('", list$file_name[i], "', as.is=T, fileEncoding='CP932')")
+      )
     )
-  )
 }
+
+# JACLS-ALL-02
 # Pick up data from ALL02
-ALL02pick <- ALL02[, c(2, 6, 45)]
+ALL02pick <- ALL02[, c(2, 6, 45)]  # JACLS登録コード,診断年月日,治療終了日※3
 # Pick up data from JACLS
-JACLSpick <- JACLS[, c(15, 21:23)]
+JACLSpick <- JACLS[, c(15, 21, 22, 23)]  # 登録コード,生死,死亡日,最終確認日
 # merge
 merge1 <- merge(ALL02pick, JACLSpick, by.x="JACLS登録コード", by.y="登録コード", all.x=T)
 names(merge1) <- c("SUBJID", "MHSTDTC", "DATE_END_TRT", "DTHFL", "DTHDTC", "DSSTDTC")
 merge1$CMTRT <- "ALL02"  # ALL02のデータセット作成終わり
 
+# JPLSG-AML-05
 # Pick up and proccessing data from AML05(終了日の列)
 AML05pick <- subset(AML05, AML05$事後不適格 == "#N/A")
 AML05pick[is.na(AML05pick)] <- "-"  # Replace NA to "-"
@@ -60,7 +63,7 @@ for (i in 1:length(merge2$J_CD)){
   srt.b <- merge2$生死[i]
   str.tenki <- ""
 
-  if  (str.a==1) {
+  if (str.a == 1) {
     str.tenki <- "true"
   } else {
     str.tenki  <- srt.b
@@ -99,4 +102,6 @@ merge2 <- merge2[, c(1, 2, 5, 9:11)]
 names(merge2)[1:2] <- c("SUBJID", "MHSTDTC")
 merge2$CMTRT <- "AML05"
 
+# JACLS-ALL-02 + JPLSG-AML-05
 calc.data <- rbind(merge1, merge2)
+setwd("..")
