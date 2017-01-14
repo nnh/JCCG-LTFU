@@ -46,10 +46,23 @@ for (i in 1:length(AML05pick$J_CD)) {
   } else if (srt.b == 1) {
     str.date <- AML05pick$移植日 [i]
   } else {
-    str.date <- AML05pick$therapy最終投薬日[i]}
+    str.date <- AML05pick$therapy最終投薬日[i]
+  }
 
   AML05pick$DATE_END_TRT[i]= str.date  # 結果を入れる列の指定
 }
+
+# 上記はこれでも動きますでしょうか。動けば下記の条件文も同様に変更可能かと。
+# for (i in 1:length(AML05pick$J_CD)) {
+#   if (AML05pick$中止届有無0なし.1あり[i] == 1) {
+#     AML05pick$DATE_END_TRT[i] <- AML05pick$中止届に記載された中止日 [i]
+#   } else if (AML05pick$移植有無0.なし.1.あり[i] == 1) {
+#     AML05pick$DATE_END_TRT[i] <- AML05pick$移植日 [i]
+#   } else {
+#     AML05pick$DATE_END_TRT[i] <- AML05pick$therapy最終投薬日[i]
+#   }
+# }
+
 AML05pick1 <- AML05pick[, c(2, 5, 14:16)]
 names(AML05pick1)[4] <- "AML05最終確認日"
 
