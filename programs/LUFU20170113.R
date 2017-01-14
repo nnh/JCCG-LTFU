@@ -34,17 +34,17 @@ AML05pick <- subset(AML05, AML05$事後不適格 == "#N/A")
 AML05pick[is.na(AML05pick)] <- "-"  # Replace NA to "-"
 
 for (i in 1:length(AML05pick$J_CD)) {
-  str.a <- AML05pick$中止届有無0なし.1あり[i] 　　　　　
-  srt.b <- AML05pick$移植有無0.なし.1.あり[i]  　　　
-  str.date = ""       　　　　　　　
-  
-  if  (str.a == 1){ 
+  str.a <- AML05pick$中止届有無0なし.1あり[i]
+  srt.b <- AML05pick$移植有無0.なし.1.あり[i]
+  str.date <- ""
+
+  if  (str.a == 1) {
     str.date <- AML05pick$中止届に記載された中止日 [i]
   } else if (srt.b == 1) {
     str.date <- AML05pick$移植日 [i]
   } else {
     str.date  <- AML05pick$therapy最終投薬日[i]}
-  
+
   AML05pick$DATE_END_TRT[i]= str.date  # 結果を入れる列の指定
 }
 AML05pick1 <- AML05pick[, c(2, 5, 14:16)]
@@ -56,42 +56,43 @@ merge2 <- merge(AML05pick1, JPLSGpick, by.x="J_CD", by.y="登録コード", all.
 
 # proccessing data from merge data(生死の列)
 for (i in 1:length(merge2$J_CD)){
-  str.a = merge2$死亡.0.なし..1.あり[i] 　　　　　
-  srt.b = merge2$生死[i]  　　　
-  str.tenki = ""       　　　　　　　
-  
-  if  (str.a==1){ 
+  str.a <- merge2$死亡.0.なし..1.あり[i]
+  srt.b <- merge2$生死[i]
+  str.tenki <- ""
+
+  if  (str.a==1) {
     str.tenki <- "true"
   } else {
-    str.tenki  <- srt.b}
-  
-  merge2$DTHFL[i] <- str.tenki  　　　 
-}
-
-for (i in 1:length(merge2$J_CD)){
-  str.a <- merge2$DTHFL[i]　　　　　
-  str.b <- merge2$死亡日[i]  
-  str.c <- merge2$AML05最終確認日[i]
-  str.date <- ""       　　　　　　　
-  
-  if ((str.a == "true") & (srt.b == "")) {
-    str.date <- str.c
-  } else if (str.a=="true") {
-    str.date <- str.b
-  } else {
-    str.date  <- ""
+    str.tenki  <- srt.b
   }
-  merge2$DTHDTC[i] <- str.date  　　　 
+
+  merge2$DTHFL[i] <- str.tenki
 }
 
 for (i in 1:length(merge2$J_CD)) {
-  str.a <- merge2$最終確認日[i]　　　　
-  str.b <- merge2$AML05最終確認日[i]  
-  str.date <- ""       　　　　　　　
-  
+  str.a <- merge2$DTHFL[i]
+  str.b <- merge2$死亡日[i]
+  str.c <- merge2$AML05最終確認日[i]
+  str.date <- ""
+
+  if ((str.a == "true") & (srt.b == "")) {
+    str.date <- str.c
+  } else if (str.a == "true") {
+    str.date <- str.b
+  } else {
+    str.date <- ""
+  }
+  merge2$DTHDTC[i] <- str.date
+}
+
+for (i in 1:length(merge2$J_CD)) {
+  str.a <- merge2$最終確認日[i]
+  str.b <- merge2$AML05最終確認日[i]
+  str.date <- ""
+
   ifelse(str.a == "", str.date <- str.b, str.date <- str.a)
-  
-  merge2$DSSTDTC[i] <- str.date  　　　 
+
+  merge2$DSSTDTC[i] <- str.date
 }
 
 merge2 <- merge2[, c(1, 2, 5, 9:11)]
