@@ -84,6 +84,8 @@ for (i in 1:length(merge2$J_CD)){
 
   merge2$DTHFL[i] <- str.tenki
 }
+# 上記のfor文は下記の1文で動くと思います。試してみて下さい。
+# merge2$DTHFL <- ifelse(merge2$死亡.0.なし..1.あり == 1, "true", merge2$生死)
 
 for (i in 1:length(merge2$J_CD)) {
   str.a <- merge2$DTHFL[i]
@@ -110,6 +112,8 @@ for (i in 1:length(merge2$J_CD)) {
 
   merge2$DSSTDTC[i] <- str.date
 }
+# 上記のfor文は下記の1文で動くと思います。試してみて下さい。
+# merge2$DSSTDTC <- ifelse(merge2$最終確認日 == "", merge2$AML05最終確認日, merge2$最終確認日)
 
 merge2 <- merge2[, c(1, 2, 5, 9:11)]
 names(merge2)[1:2] <- c("SUBJID", "MHSTDTC")
