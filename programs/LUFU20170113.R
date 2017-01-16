@@ -3,7 +3,8 @@
 # 2017/1/13
 #########
 
-fix.date <- "2014/10/31"
+fix.date.aml05 <- "2016/10/05"
+fix.date.all02 <- "2016/05/12"
 setwd("./rawdata")
 
 # Making File List
@@ -29,7 +30,7 @@ JACLSpick <- JACLS[, c(11,15, 21, 22, 84)]  # 生年月日,登録コード,生�
 # merge
 merge1 <- merge(ALL02pick, JACLSpick, by.x="JACLS登録コード", by.y="登録コード", all.x=T)
 names(merge1) <- c("SUBJID", "MHSTDTC", "DATE_END_TRT","BRTHDTC", "DTHFL", "DTHDTC", "DSSTDTC")
-merge1$CMTRT <- "ALL02"  # ALL02のデータセット作成終わり
+merge1$STUDYID <- "ALL02"  # ALL02のデータセット作成終わり
 
 # JPLSG-AML-05
 # Pick up and proccessing data from AML05(終了日の列)
@@ -93,46 +94,55 @@ merge2$DSSTDTC <- ifelse(merge2$最終確認日 == "", merge2$AML05最終確認�
 
 merge2 <- merge2[, c(1, 2, 5,6, 9:11)]
 names(merge2)[c(1,2,4,5)] <- c("SUBJID", "MHSTDTC","BRTHDTC","DSSTDTC")
-merge2$CMTRT <- "AML05"
+merge2$STUDYID <- "AML05"
 merge2 <- merge2[,c(1:4,6,7,5,8)]
 # JACLS-ALL-02 + JPLSG-AML-05
 data.set <- rbind(merge1, merge2)
 
 #解析対象集団の抽出
 data.set[is.na(data.set)] <- ""  # Replace NA to ""
-for(i in 1:length(data.set$SUBJID)){
-  str.a <- data.set$DTHDTC[i]
-  str.b <- data.set$DSSTDTC[i]
-  str.c <- data.set$DTHFL[i]
-  str.d <- data.set$DATE_END_TRT[i]
-  str.r <- ""
-if((str.a!="")&(str.a<= fix.date)){
-    str.r <- "death prev.20141031"
-  }else if(str.b==""){
-    str.r <- "unknown DSSTDTC"
-  }else if((str.c=="true")&(str.a=="")){
-    str.r <- "unknown DTHDTC"
-  }else if(str.d==""){
-    str.r <- "unknown date end treat"
-  }else if(str.c==""){
-  str.r <- "unknown DTHFL"
-  }
-  else{str.r<-"A"}
-  data.set$anal.obj[i] <- str.r  
-}
+data.set$fix.date <- ifelse(data.set$STUDYID == "AML05", fix.date.aml05, fix.date.all02)
+# for(i in 1:length(data.set$SUBJID)){
+#   str.a <- data.set$DTHDTC[i]
+#   str.b <- data.set$DSSTDTC[i]
+#   str.c <- data.set$DTHFL[i]
+#   str.d <- data.set$DATE_END_TRT[i]
+#   str.r <- ""
+# if((str.a!="")&(str.a<= fix.date)){
+#     str.r <- "death prev.20141031"
+#   }else if(str.b==""){
+#     str.r <- "unknown DSSTDTC"
+#   }else if((str.c=="true")&(str.a=="")){
+#     str.r <- "unknown DTHDTC"
+#   }else if(str.d==""){
+#     str.r <- "unknown date end treat"
+#   }else if(str.c==""){
+#   str.r <- "unknown DTHFL"
+#   }
+#   else{str.r<-"A"}
+#   data.set$anal.obj[i] <- str.r
+# }
 
-breakdown <- data.matrix(table(data.set$anal.obj))  #内訳
-
-anal.set <- subset(data.set,data.set$anal.obj=="A")  # 解析対象のみ抽出
+# breakdown <- data.matrix(table(data.set$anal.obj))  #内訳
+anal.set <- data.set
+# anal.set <- subset(data.set,data.set$anal.obj=="A")  # 解析対象のみ抽出
 
 yeardif <- function(starting, ending) {
   as.integer((as.integer(format(as.Date(ending),"%Y%m%d")) - as.integer(format(as.Date(starting),"%Y%m%d")))/10000)
 　　　　　　　　　　　　　　　　　　　　}　　# 満xx年を作る関数
 
-anal.set$fix.date <- fix.date
-anal.set$dif.year1 <- yeardif(anal.set$fix.date,anal.set$DSSTDTC)
-anal.set$within.2y <-ifelse(anal.set$dif.year1<=2,"true","false")#2年以内の転帰確認##ここが正しく動いていません
-anal.set$tp.2y <-ifelse(anal.set$dif.year1>2,"true","false") #2年時点の転帰確認
+#anal.set$fix.date <- ifelse(anal.set$STUDYID == "AML05", fix.date.aml05, fix.date.all02)
+anal.set$dif.year1 <- yeardif(anal.set$DSSTDTC, anal.set$fix.date)
+for(i in 1:length(anal.set$SUBJID)){
+  if(anal.set$DTHDTC[i]==""){
+  anal.set$dif.year2[i] <- ""
+  }else {
+   anal.set$dif.year2[i] <- yeardif(anal.set$DTHDTC[i], anal.set$fix.date[i])
+     }
+  }
+#anal.set$within.2y <-ifelse(anal.set$dif.year1<=2, "true","false")#2年以内の転帰確認
+anal.set$within.2y <- ifelse((is.na(as.numeric(anal.set$dif.year1)) | as.numeric(anal.set$dif.year1) > 2),"false","true")  #2年以内の転帰確認
+anal.set$tp.2y <- ifelse((is.na(as.numeric(anal.set$dif.year2)) | as.numeric(anal.set$dif.year2) <2),"false","true")    #2年時点の死亡確認
 anal.set$y.end.trt <- yeardif(anal.set$DATE_END_TRT,anal.set$fix.date) #治療終了後年数
 anal.set$age.fixed <- yeardif(anal.set$BRTHDTC,anal.set$fix.date) #データ固定時の年齢
 
@@ -140,32 +150,34 @@ followup_rate <-function(dataframe){
   sum(dataframe$within.2y=="true")/sum(dataframe$tp.2y=="false")
                                     }  #follow up率の定義
 #横軸に治療後年数、縦軸にフォローアップ率のグラフを記述する
-max <- max(anal.set$y.end.trt)
-for(i in 1:max){
+#max <- max(anal.set$y.end.trt)
+for(i in 1:20){
   eval(parse(text=paste0("aa<- subset(anal.set,anal.set$y.end.trt==",i,")")))
   治療終了後年数 <- i
   フォローアップ率 <- followup_rate(aa)
   eval(parse(text=paste0("df",i,"<-data.frame(治療終了後年数,フォローアップ率)"))) 
                }
-df.number <- paste("df",c(1:max),sep="",collapse=",")
+df.number <- paste("df",c(1:20),sep="",collapse=",")
 eval(parse(text=paste0("result1 <- data.matrix(rbind(",df.number,"))")))
 setwd("../output")
 Figure1 <-"Figure1.png"
 png(Figure1, width = 800, height = 600)
-barplot(result1[,2], names.arg=c(1:max),main="治療終了後年数別フォローアップ率",xlab="治療終了後年数", ylab="フォローアップ率")
+barplot(result1[,2], names.arg=c(1:20),main="治療終了後年数別フォローアップ率",xlab="治療終了後年数", ylab="フォローアップ率")
 dev.off()
 
 #横軸にデータ固定時年齢、縦軸にフォローアップ率のグラフを記述する
-max <- max(anal.set$age.fixed)
-for(i in 1:max){
+#max <- max(anal.set$age.fixed)
+for(i in 1:35){
   eval(parse(text=paste0("aa<- subset(anal.set,anal.set$age.fixed==",i,")")))
   データ固定時年齢 <- i
   フォローアップ率 <- followup_rate(aa)
   eval(parse(text=paste0("df",i,"<-data.frame(データ固定時年齢,フォローアップ率)"))) 
 }
-df.number <- paste("df",c(1:max),sep="",collapse=",")
+df.number <- paste("df",c(1:35),sep="",collapse=",")
 eval(parse(text=paste0("result2 <- data.matrix(rbind(",df.number,"))")))
 Figure2 <-"Figure2.png"
 png(Figure2, width = 800, height = 600)
-barplot(result2[,2], names.arg=c(1:max),main="年齢別フォローアップ率",xlab="データ固定時年齢", ylab="フォローアップ率")
+barplot(result2[,2], names.arg=c(1:35),main="年齢別フォローアップ率",xlab="データ固定時年齢", ylab="フォローアップ率")
 dev.off()
+setwd("..")
+
