@@ -25,31 +25,30 @@ for (i in 1:length(list$no)) {
 # Pick up data from ALL02
 ALL02pick <- ALL02[, c(2, 6, 45)]  # JACLS登録コード,診断年月日,治療終了日※3
 # Pick up data from JACLS
-JACLSpick <- JACLS[, c(15, 21, 22, 23)]  # 登録コード,生死,死亡日,最終確認日
+JACLSpick <- JACLS[, c(11,15, 21, 22, 84)]  # 生年月日,登録コード,生死,死亡日,最終確認日
 # merge
 merge1 <- merge(ALL02pick, JACLSpick, by.x="JACLS登録コード", by.y="登録コード", all.x=T)
-names(merge1) <- c("SUBJID", "MHSTDTC", "DATE_END_TRT", "DTHFL", "DTHDTC", "DSSTDTC")
+names(merge1) <- c("SUBJID", "MHSTDTC", "DATE_END_TRT","BRTHDTC", "DTHFL", "DTHDTC", "DSSTDTC")
 merge1$CMTRT <- "ALL02"  # ALL02のデータセット作成終わり
 
 # JPLSG-AML-05
 # Pick up and proccessing data from AML05(終了日の列)
-AML05pick <- subset(AML05, AML05$事後不適格 == "#N/A")
+AML05pick <- subset(AML05, is.na(AML05$解析対象外))
 AML05pick[is.na(AML05pick)] <- "-"  # Replace NA to "-"
 
 for (i in 1:length(AML05pick$J_CD)) {
   str.a <- AML05pick$中止届有無0なし.1あり[i]
-  srt.b <- AML05pick$移植有無0.なし.1.あり[i]
+  str.b <- AML05pick$移植有無0.なし.1.あり[i]
   str.date <- ""
 
   if (str.a == 1) {
     str.date <- AML05pick$中止届に記載された中止日 [i]
-  } else if (srt.b == 1) {
+  } else if (str.b == 1) {
     str.date <- AML05pick$移植日 [i]
   } else {
     str.date <- AML05pick$therapy最終投薬日[i]
   }
-
-  AML05pick$DATE_END_TRT[i]= str.date  # 結果を入れる列の指定
+  AML05pick$DATE_END_TRT[i]<- str.date  # 結果を入れる列の指定
 }
 
 # 上記はこれでも動きますでしょうか。動けば下記の条件文も同様に変更可能かと。
@@ -67,25 +66,12 @@ AML05pick1 <- AML05pick[, c(2, 5, 14:16)]
 names(AML05pick1)[4] <- "AML05最終確認日"
 
 # Pick up data from JPLSG
-JPLSGpick <- JPLSG[, c(15, 21:23)]
+JPLSGpick <- JPLSG[, c(11,15, 21:23)]
 merge2 <- merge(AML05pick1, JPLSGpick, by.x="J_CD", by.y="登録コード", all.x=T)
 
 # proccessing data from merge data(生死の列)
-for (i in 1:length(merge2$J_CD)){
-  str.a <- merge2$死亡.0.なし..1.あり[i]
-  srt.b <- merge2$生死[i]
-  str.tenki <- ""
 
-  if (str.a == 1) {
-    str.tenki <- "true"
-  } else {
-    str.tenki <- srt.b
-  }
-
-  merge2$DTHFL[i] <- str.tenki
-}
-# 上記のfor文は下記の1文で動くと思います。試してみて下さい。
-# merge2$DTHFL <- ifelse(merge2$死亡.0.なし..1.あり == 1, "true", merge2$生死)
+merge2$DTHFL <- ifelse(merge2$死亡.0.なし..1.あり == "1", "true", merge2$生死)
 
 for (i in 1:length(merge2$J_CD)) {
   str.a <- merge2$DTHFL[i]
@@ -93,7 +79,7 @@ for (i in 1:length(merge2$J_CD)) {
   str.c <- merge2$AML05最終確認日[i]
   str.date <- ""
 
-  if ((str.a == "true") & (srt.b == "")) {
+  if ((str.a == "true") & (str.b == "")) {
     str.date <- str.c
   } else if (str.a == "true") {
     str.date <- str.b
@@ -103,22 +89,83 @@ for (i in 1:length(merge2$J_CD)) {
   merge2$DTHDTC[i] <- str.date
 }
 
-for (i in 1:length(merge2$J_CD)) {
-  str.a <- merge2$最終確認日[i]
-  str.b <- merge2$AML05最終確認日[i]
-  str.date <- ""
+merge2$DSSTDTC <- ifelse(merge2$最終確認日 == "", merge2$AML05最終確認日, merge2$最終確認日)
 
-  ifelse(str.a == "", str.date <- str.b, str.date <- str.a)
-
-  merge2$DSSTDTC[i] <- str.date
-}
-# 上記のfor文は下記の1文で動くと思います。試してみて下さい。
-# merge2$DSSTDTC <- ifelse(merge2$最終確認日 == "", merge2$AML05最終確認日, merge2$最終確認日)
-
-merge2 <- merge2[, c(1, 2, 5, 9:11)]
-names(merge2)[1:2] <- c("SUBJID", "MHSTDTC")
+merge2 <- merge2[, c(1, 2, 5,6, 9:11)]
+names(merge2)[c(1,2,4,5)] <- c("SUBJID", "MHSTDTC","BRTHDTC","DSSTDTC")
 merge2$CMTRT <- "AML05"
-
+merge2 <- merge2[,c(1:4,6,7,5,8)]
 # JACLS-ALL-02 + JPLSG-AML-05
-calc.data <- rbind(merge1, merge2)
-setwd("..")
+data.set <- rbind(merge1, merge2)
+
+#解析対象集団の抽出
+data.set[is.na(data.set)] <- ""  # Replace NA to ""
+for(i in 1:length(data.set$SUBJID)){
+  str.a <- data.set$DTHDTC[i]
+  str.b <- data.set$DSSTDTC[i]
+  str.c <- data.set$DTHFL[i]
+  str.d <- data.set$DATE_END_TRT[i]
+  str.r <- ""
+if((str.a!="")&(str.a<= fix.date)){
+    str.r <- "death prev.20141031"
+  }else if(str.b==""){
+    str.r <- "unknown DSSTDTC"
+  }else if((str.c=="true")&(str.a=="")){
+    str.r <- "unknown DTHDTC"
+  }else if(str.d==""){
+    str.r <- "unknown date end treat"
+  }else if(str.c==""){
+  str.r <- "unknown DTHFL"
+  }
+  else{str.r<-"A"}
+  data.set$anal.obj[i] <- str.r  
+}
+
+breakdown <- data.matrix(table(data.set$anal.obj))  #内訳
+
+anal.set <- subset(data.set,data.set$anal.obj=="A")  # 解析対象のみ抽出
+
+yeardif <- function(starting, ending) {
+  as.integer((as.integer(format(as.Date(ending),"%Y%m%d")) - as.integer(format(as.Date(starting),"%Y%m%d")))/10000)
+　　　　　　　　　　　　　　　　　　　　}　　# 満xx年を作る関数
+
+anal.set$fix.date <- fix.date
+anal.set$dif.year1 <- yeardif(anal.set$fix.date,anal.set$DSSTDTC)
+anal.set$within.2y <-ifelse(anal.set$dif.year1<=2,"true","false")#2年以内の転帰確認##ここが正しく動いていません
+anal.set$tp.2y <-ifelse(anal.set$dif.year1>2,"true","false") #2年時点の転帰確認
+anal.set$y.end.trt <- yeardif(anal.set$DATE_END_TRT,anal.set$fix.date) #治療終了後年数
+anal.set$age.fixed <- yeardif(anal.set$BRTHDTC,anal.set$fix.date) #データ固定時の年齢
+
+followup_rate <-function(dataframe){
+  sum(dataframe$within.2y=="true")/sum(dataframe$tp.2y=="false")
+                                    }  #follow up率の定義
+#横軸に治療後年数、縦軸にフォローアップ率のグラフを記述する
+max <- max(anal.set$y.end.trt)
+for(i in 1:max){
+  eval(parse(text=paste0("aa<- subset(anal.set,anal.set$y.end.trt==",i,")")))
+  治療終了後年数 <- i
+  フォローアップ率 <- followup_rate(aa)
+  eval(parse(text=paste0("df",i,"<-data.frame(治療終了後年数,フォローアップ率)"))) 
+               }
+df.number <- paste("df",c(1:max),sep="",collapse=",")
+eval(parse(text=paste0("result1 <- data.matrix(rbind(",df.number,"))")))
+setwd("../output")
+Figure1 <-"Figure1.png"
+png(Figure1, width = 800, height = 600)
+barplot(result1[,2], names.arg=c(1:max),main="治療終了後年数別フォローアップ率",xlab="治療終了後年数", ylab="フォローアップ率")
+dev.off()
+
+#横軸にデータ固定時年齢、縦軸にフォローアップ率のグラフを記述する
+max <- max(anal.set$age.fixed)
+for(i in 1:max){
+  eval(parse(text=paste0("aa<- subset(anal.set,anal.set$age.fixed==",i,")")))
+  データ固定時年齢 <- i
+  フォローアップ率 <- followup_rate(aa)
+  eval(parse(text=paste0("df",i,"<-data.frame(データ固定時年齢,フォローアップ率)"))) 
+}
+df.number <- paste("df",c(1:max),sep="",collapse=",")
+eval(parse(text=paste0("result2 <- data.matrix(rbind(",df.number,"))")))
+Figure2 <-"Figure2.png"
+png(Figure2, width = 800, height = 600)
+barplot(result2[,2], names.arg=c(1:max),main="年齢別フォローアップ率",xlab="データ固定時年齢", ylab="フォローアップ率")
+dev.off()
