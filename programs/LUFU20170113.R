@@ -116,18 +116,18 @@ ads <- data.set
 # ads <- subset(data.set,data.set$anal.obj == "A")  # 解析対象のみ抽出
 
 #ads$fix.date <- ifelse(ads$STUDYID == "AML05", kFixDateAml05, kFixDateAll02)
-ads$dif.year1 <- YearDif(ads$DSSTDTC, ads$fix.date)
+ads$dif.year1 <- YearDif(ads$DSSTDTC, ads$fix.date) #dif.year1には最終確認日-固定日が入る
 for (i in 1:length(ads$SUBJID)) {
   if (ads$DTHDTC[i] == "") {
     ads$dif.year2[i] <- ""
   } else {
     ads$dif.year2[i] <- YearDif(ads$DTHDTC[i], ads$fix.date[i])
   }
-}
+}  # dif.year2には死亡日-データ固定日が入る
 #ads$followup.in.2y <- ifelse(ads$dif.year1 <= 2, T, F)  # 2年以内の転帰確認
 ads$followup.in.2y <- ifelse((is.na(as.numeric(ads$dif.year1)) | as.numeric(ads$dif.year1) > 2),
                              F, T)  # 2年以内の転帰確認
-ads$death.before.2y <- ifelse((is.na(as.numeric(ads$dif.year2)) | as.numeric(ads$dif.year2) < 2),
+ads$death.before.2y <- ifelse((is.na(as.numeric(ads$dif.year2)) | as.numeric(ads$dif.year2) <=2),
                               F, T)  # 2年時点の死亡確認
 ads$y.end.trt <- YearDif(ads$DATE_END_TRT, ads$fix.date)  # 治療終了後年数
 ads$age.fixed <- YearDif(ads$BRTHDTC, ads$fix.date)  #データ固定時の年齢
@@ -143,11 +143,11 @@ for (i in 1:20) {
 df.number <- paste("df", c(1:20), sep="", collapse=",")
 eval(parse(text = paste0("result1 <- data.matrix(rbind(", df.number, "))")))
 
-setwd("../output")
-png("Figure1.png", width=800, height=600)
-barplot(result1[,2], names.arg=c(1:20), main="Follow up rate by years after end of treatment",
+# setwd("../output")
+# png("Figure1.png", width=800, height=600)
+barplot(result1[,2], ylim=c(0:1), names.arg=c(1:20), main="Follow up rate by years after end of treatment",
         xlab="Years after end of treatment", ylab="Follow up rate")
-dev.off()
+# dev.off()
 
 # 横軸にデータ固定時年齢、縦軸にフォローアップ率のグラフを記述する
 # max <- max(ads$age.fixed)
@@ -159,7 +159,7 @@ for (i in 1:35) {
 }
 df.number <- paste("df", c(1:35), sep="", collapse=",")
 eval(parse(text=paste0("result2 <- data.matrix(rbind(", df.number, "))")))
-png("Figure2.png", width=800, height=600)
-barplot(result2[,2], names.arg=c(1:35), main="Follow up rate by age", xlab="Age at data fix", ylab="Follow up rate")
-dev.off()
+# png("Figure2.png", width=800, height=600)
+barplot(result2[,2],  ylim=c(0:1), names.arg=c(1:35), main="Follow up rate by age", xlab="Age at data fix", ylab="Follow up rate")
+# dev.off()
 setwd("..")
