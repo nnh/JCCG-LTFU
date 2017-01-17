@@ -34,11 +34,14 @@ for (i in 1:length(list$no)) {
 # JACLS-ALL-02
 # Pick up data from ALL02
 ALL02pick <- ALL02[, c(2, 6, 45)]  # JACLS登録コード,診断年月日,治療終了日※3
+#現施設名と施設コードをマージして、SCSTRESCを作成
+merge.JACLS <- merge(JACLS, facil, by.x = "現施設名", by.y="施設名", all.x=T)
+merge.JACLS$SCSTRESC <- substr(merge.JACLS$施設CD,1 ,2)
 # Pick up data from JACLS
-JACLSpick <- JACLS[, c(11,15, 21, 22, 84)]  # 生年月日,登録コード,生死,死亡日,最終確認日
+JACLSpick <- merge.JACLS[, c(11, 15, 21, 22, 84, 194)]  # 生年月日,登録コード,生死,死亡日,最終確認日,施設CD
 # merge
 merge1 <- merge(ALL02pick, JACLSpick, by.x="JACLS登録コード", by.y="登録コード", all.x=T)
-names(merge1) <- c("SUBJID", "MHSTDTC", "DATE_END_TRT","BRTHDTC", "DTHFL", "DTHDTC", "DSSTDTC")
+names(merge1)[c(1:7)] <- c("SUBJID", "MHSTDTC", "DATE_END_TRT","BRTHDTC", "DTHFL", "DTHDTC", "DSSTDTC")
 merge1$STUDYID <- "ALL02"  # ALL02のデータセット作成終わり
 
 # JPLSG-AML-05
@@ -58,9 +61,11 @@ for (i in 1:length(AML05pick$J_CD)) {
 
 AML05pick1 <- AML05pick[, c(2, 5, 14:16)]
 names(AML05pick1)[4] <- "AML05最終確認日"
-
+#現施設名と施設コードをマージして、SCSTRESCを作成
+merge.JPLSG <- merge(JPLSG, facil, by.x = "現施設名", by.y="施設名",all.x=T)
+merge.JPLSG$SCSTRESC <- substr(merge.JPLSG$施設CD,1,2)
 # Pick up data from JPLSG
-JPLSGpick <- JPLSG[, c(11,15, 21:23)]
+JPLSGpick <- merge.JPLSG[, c(11, 15, 21:23, 62)]
 merge2 <- merge(AML05pick1, JPLSGpick, by.x="J_CD", by.y="登録コード", all.x=T)
 
 # proccessing data from merge data(生死の列)
@@ -78,13 +83,13 @@ for (i in 1:length(merge2$J_CD)) {
 
 merge2$DSSTDTC <- ifelse(merge2$最終確認日 == "", merge2$AML05最終確認日, merge2$最終確認日)
 
-merge2 <- merge2[, c(1, 2, 5, 6, 9:11)]
-names(merge2)[c(1, 2, 4, 5)] <- c("SUBJID", "MHSTDTC", "BRTHDTC", "DSSTDTC")
-merge2$STUDYID <- "AML05"
-merge2 <- merge2[, c(1:4, 6, 7, 5, 8)]
+merge2.1 <- merge2[, c(1, 2, 5, 6, 10:13)]
+names(merge2.1)[c(1, 2, 4)] <- c("SUBJID", "MHSTDTC", "BRTHDTC")
+merge2.1$STUDYID <- "AML05"
+merge2.2 <- merge2.1[, c(1:4, 6:8, 5, 9)]#####ここの並び順変えること
 
 # JACLS-ALL-02 + JPLSG-AML-05
-data.set <- rbind(merge1, merge2)
+data.set <- rbind(merge1, merge2.2)
 
 #解析対象集団の抽出
 data.set[is.na(data.set)] <- ""  # Replace NA to ""
@@ -116,18 +121,18 @@ ads <- data.set
 # ads <- subset(data.set,data.set$anal.obj == "A")  # 解析対象のみ抽出
 
 #ads$fix.date <- ifelse(ads$STUDYID == "AML05", kFixDateAml05, kFixDateAll02)
-ads$dif.year1 <- YearDif(ads$DSSTDTC, ads$fix.date)
+ads$dif.year1 <- YearDif(ads$DSSTDTC, ads$fix.date) #dif.year1には最終確認日-固定日が入る
 for (i in 1:length(ads$SUBJID)) {
   if (ads$DTHDTC[i] == "") {
     ads$dif.year2[i] <- ""
   } else {
     ads$dif.year2[i] <- YearDif(ads$DTHDTC[i], ads$fix.date[i])
   }
-}
+}  # dif.year2には死亡日-データ固定日が入る
 #ads$followup.in.2y <- ifelse(ads$dif.year1 <= 2, T, F)  # 2年以内の転帰確認
 ads$followup.in.2y <- ifelse((is.na(as.numeric(ads$dif.year1)) | as.numeric(ads$dif.year1) > 2),
                              F, T)  # 2年以内の転帰確認
-ads$death.before.2y <- ifelse((is.na(as.numeric(ads$dif.year2)) | as.numeric(ads$dif.year2) < 2),
+ads$death.before.2y <- ifelse((is.na(as.numeric(ads$dif.year2)) | as.numeric(ads$dif.year2) <=2),
                               F, T)  # 2年時点の死亡確認
 ads$y.end.trt <- YearDif(ads$DATE_END_TRT, ads$fix.date)  # 治療終了後年数
 ads$age.fixed <- YearDif(ads$BRTHDTC, ads$fix.date)  #データ固定時の年齢
@@ -143,11 +148,11 @@ for (i in 1:20) {
 df.number <- paste("df", c(1:20), sep="", collapse=",")
 eval(parse(text = paste0("result1 <- data.matrix(rbind(", df.number, "))")))
 
-setwd("../output")
-png("Figure1.png", width=800, height=600)
-barplot(result1[,2], names.arg=c(1:20), main="Follow up rate by years after end of treatment",
+# setwd("../output")
+# png("Figure1.png", width=800, height=600)
+barplot(result1[,2], ylim=c(0:1), names.arg=c(1:20), main="Follow up rate by years after end of treatment",
         xlab="Years after end of treatment", ylab="Follow up rate")
-dev.off()
+# dev.off()
 
 # 横軸にデータ固定時年齢、縦軸にフォローアップ率のグラフを記述する
 # max <- max(ads$age.fixed)
@@ -159,7 +164,7 @@ for (i in 1:35) {
 }
 df.number <- paste("df", c(1:35), sep="", collapse=",")
 eval(parse(text=paste0("result2 <- data.matrix(rbind(", df.number, "))")))
-png("Figure2.png", width=800, height=600)
-barplot(result2[,2], names.arg=c(1:35), main="Follow up rate by age", xlab="Age at data fix", ylab="Follow up rate")
-dev.off()
+# png("Figure2.png", width=800, height=600)
+barplot(result2[,2],  ylim=c(0:1), names.arg=c(1:35), main="Follow up rate by age", xlab="Age at data fix", ylab="Follow up rate")
+# dev.off()
 setwd("..")
