@@ -44,7 +44,7 @@ all02.pick <- ALL02[, c(2, 6, 45)]  # JACLS登録コード,診断年月日,治�
 jacls.pick <- JACLS[, c(11,15, 21, 22, 84)]  # 生年月日,登録コード,生死,死亡日,最終確認日
 merge1 <- merge(all02.pick, jacls.pick, by.x="JACLS登録コード", by.y="登録コード", all.x=T)
 names(merge1) <- c("SUBJID", "MHSTDTC", "DATE_END_TRT","BRTHDTC", "DTHFL", "DTHDTC", "DSSTDTC")
-merge1$STUDYID <- "ALL02"  # ALL02のデータセット作成終わり
+merge1$STUDYID <- "ALL02"
 
 # JPLSG-AML-05
 # Pick up and proccessing data from AML05(終了日の列)
@@ -90,6 +90,8 @@ merge2 <- merge2[, c(1:4, 6, 7, 5, 8)]
 
 # JACLS-ALL-02 + JPLSG-AML-05
 data.set <- rbind(merge1, merge2)
+data.set$DTHFL[data.set$DTHFL == "true"] <- T
+data.set$DTHFL[data.set$DTHFL == "false"] <- F
 
 #解析対象集団の抽出
 data.set[is.na(data.set)] <- ""  # Replace NA to ""
