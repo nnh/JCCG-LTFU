@@ -38,33 +38,23 @@ for (i in 1:length(list$no)) {
       )
     )
 }
-JACLS.registration <- regis[,c(7, 15)]
+jacls.registration <- regis[,c(7, 15)]
 # JACLS-ALL-02
-<<<<<<< HEAD
-# Pick up data from ALL02
-ALL02pick0 <- ALL02[, c(2, 6, 45)]  # JACLS登録コード,診断年月日,治療終了日※3
+all02.pick0 <- ALL02[, c(2, 6, 45)]  # JACLS登録コード,診断年月日,治療終了日※3
 #現施設名をマージする(regitrationから施設名はとる)
-ALL02pick <- merge(ALL02pick0, JACLS.registration, by.x= "JACLS登録コード", by.y="登録コード", all.x=T)
+all02.pick <- merge(all02.pick0, jacls.registration, by.x= "JACLS登録コード", by.y="登録コード", all.x=T)
 #現施設名と施設コードをマージして、SCSTRESCを作成
-merge.JACLS0 <- merge(ALL02pick, facil, by.x = "現施設名", by.y="施設名", all.x=T)
+merge.JACLS0 <- merge(all02.pick, facil, by.x = "現施設名", by.y="施設名", all.x=T)
 merge.JACLS <- merge(merge.JACLS0, JACLS, by.x= "JACLS登録コード", by.y= "登録コード", all.x= T )
-merge.JACLS$SCSTRESC <- substr(merge.JACLS$施設CD,1 ,2)
-# Pick up data from JACLS
-JACLSpick <- merge.JACLS[, c(1, 16, 25, 26, 27, 197)]  # 登録コード,生年月日,生死,死亡日,最終確認日,施設CD
+merge.JACLS$SCSTRESC <- floor(as.numeric(merge.JACLS$施設CD)/10000000)
+jacls.pick <- merge.JACLS[, c(1, 16, 25, 26, 27, 197)]  # 登録コード,生年月日,生死,死亡日,最終確認日,施設CD
 # merge
-merge0 <- merge(ALL02pick, JACLSpick, by="JACLS登録コード", all=T)
+merge0 <- merge(all02.pick, jacls.pick, by="JACLS登録コード", all=T)
 merge1 <- merge0[,c(1:3,5:9)]
 names(merge1)[c(1:7)] <- c("SUBJID", "MHSTDTC", "DATE_END_TRT","BRTHDTC", "DTHFL", "DTHDTC", "DSSTDTC")
-merge1$STUDYID <- "ALL02"  # ALL02のデータセット作成終わり
-=======
-all02.pick <- ALL02[, c(2, 6, 45)]  # JACLS登録コード,診断年月日,治療終了日※3
-jacls.pick <- JACLS[, c(11,15, 21, 22, 84)]  # 生年月日,登録コード,生死,死亡日,最終確認日
-merge1 <- merge(all02.pick, jacls.pick, by.x="JACLS登録コード", by.y="登録コード", all.x=T)
-names(merge1) <- c("SUBJID", "MHSTDTC", "DATE_END_TRT","BRTHDTC", "DTHFL", "DTHDTC", "DSSTDTC")
 merge1$STUDYID <- "ALL02"
 merge1$DTHFL[merge1$DTHFL == "true"] <- T
 merge1$DTHFL[merge1$DTHFL == "false"] <- F
->>>>>>> 8d810da89fa517d6546ff105c8bb8a36e2b488c4
 
 # JPLSG-AML-05
 # Pick up and proccessing data from AML05(終了日の列)
@@ -81,23 +71,15 @@ for (i in 1:length(aml05.pick$J_CD)) {
   }
 }
 
-<<<<<<< HEAD
-AML05.pick1 <- aml05.pick[, c(2, 5, 14:16)]
-names(AML05.pick1)[4] <- "AML05最終確認日"
+aml05.pick1 <- aml05.pick[, c(2, 5, 14:16)]
+names(aml05.pick1)[4] <- "AML05最終確認日"
 #現施設名と施設コードをマージして、SCSTRESCを作成
 merge.JPLSG <- merge(JPLSG, facil, by.x = "現施設名", by.y="施設名",all.x=T)
-merge.JPLSG$SCSTRESC <- substr(merge.JPLSG$施設CD,1,2)
+merge.JPLSG$SCSTRESC <-  floor(as.numeric(merge.JPLSG$施設CD)/10000000)
+
 # Pick up data from JPLSG
-JPLSGpick <- merge.JPLSG[, c(11, 15, 21:23, 62)]
-merge2 <- merge(AML05.pick1, JPLSGpick, by.x="J_CD", by.y="登録コード", all.x=T)
-# =======
-# aml05.pick1 <- aml05.pick[, c(2, 5, 14:16)]
-# names(aml05.pick1)[4] <- "AML05最終確認日"
-# 
-# # Pick up data from JPLSG
-# jplsg.pick <- JPLSG[, c(11,15, 21:23)]
-# merge2 <- merge(aml05.pick1, jplsg.pick, by.x="J_CD", by.y="登録コード", all.x=T)
-# >>>>>>> 8d810da89fa517d6546ff105c8bb8a36e2b488c4
+jplsg.pick <- merge.JPLSG[, c(15,21:23,62)]
+merge2 <- merge(aml05.pick1, jplsg.pick, by.x="J_CD", by.y="登録コード", all.x=T)
 
 # Proccessing data from merge data(生死の列)
 merge2$DTHFL <- ifelse(merge2$死亡.0.なし..1.あり == "1", T, merge2$生死)
@@ -116,13 +98,12 @@ for (i in 1:length(merge2$J_CD)) {
 
 merge2$DSSTDTC <- ifelse(merge2$最終確認日 == "", merge2$AML05最終確認日, merge2$最終確認日)
 
-merge2.1 <- merge2[, c(1, 2, 5, 6, 10:13)]
+merge2.1 <- merge2[, c(1, 2, 5, 6, 10:12, 9)]
 names(merge2.1)[c(1, 2, 4)] <- c("SUBJID", "MHSTDTC", "BRTHDTC")
 merge2.1$STUDYID <- "AML05"
-merge2.2 <- merge2.1[, c(1:4, 6:8, 5, 9)]
 
 # JACLS-ALL-02 + JPLSG-AML-05
-data.set <- rbind(merge1, merge2.2)
+data.set <- rbind(merge1, merge2.1)
 
 #解析対象集団の抽出
 data.set[is.na(data.set)] <- ""  # Replace NA to ""
@@ -147,20 +128,7 @@ data.set$fix.date <- ifelse(data.set$STUDYID == "AML05", kFixDateAml05, kFixDate
 ads <- data.set
 
 #ads$fix.date <- ifelse(ads$STUDYID == "AML05", kFixDateAml05, kFixDateAll02)
-<<<<<<< HEAD
-ads$dif.year1 <- YearDif(ads$DSSTDTC, ads$fix.date) #dif.year1には最終確認日-固定日が入る
-for (i in 1:length(ads$SUBJID)) {
-  if (ads$DTHDTC[i] == "") {
-    ads$dif.year2[i] <- ""
-  } else {
-    ads$dif.year2[i] <- YearDif(ads$DTHDTC[i], ads$fix.date[i])
-  }
-}  # dif.year2には死亡日-データ固定日が入る
-#ads$followup.in.2y <- ifelse(ads$dif.year1 <= 2, T, F)  # 2年以内の転帰確認
-ads$followup.in.2y <- ifelse((is.na(as.numeric(ads$dif.year1)) | as.numeric(ads$dif.year1) > 2),
-                             F, T)  # 2年以内の転帰確認
-ads$death.before.2y <- ifelse((is.na(as.numeric(ads$dif.year2)) | as.numeric(ads$dif.year2) <=2),
-=======
+
 ads$y.from.last.update <- YearDif(ads$DSSTDTC, ads$fix.date)  #y.from.last.updateにはデータ固定日-最終確認日が入る
 for (i in 1:length(ads$SUBJID)) {
   ads$y.from.death[i] <- YearDif(ads$DTHDTC[i], ads$fix.date[i])  # y.from.deathにはデータ固定日-死亡日が入る
@@ -168,8 +136,7 @@ for (i in 1:length(ads$SUBJID)) {
 #ads$followup.in.2y <- ifelse(ads$y.from.last.update <= 2, T, F)  # 2年以内の転帰確認
 ads$followup.in.2y <- ifelse((is.na(as.numeric(ads$y.from.last.update)) | as.numeric(ads$y.from.last.update) > 2),
                              F, T)  # 2年以内の転帰確認
-ads$death.before.2y <- ifelse((is.na(as.numeric(ads$y.from.death)) | as.numeric(ads$y.from.death) <2),
->>>>>>> 8d810da89fa517d6546ff105c8bb8a36e2b488c4
+ads$death.before.2y <- ifelse((is.na(as.numeric(ads$y.from.death)) | as.numeric(ads$y.from.death) < 2),
                               F, T)  # 2年時点の死亡確認
 ads$y.end.trt <- YearDif(ads$DATE_END_TRT, ads$fix.date)  # 治療終了後年数
 ads$age.fixed <- YearDif(ads$BRTHDTC, ads$fix.date)  #データ固定時の年齢
@@ -185,17 +152,10 @@ for (i in 1:20) {
 df.number <- paste("df", c(1:20), sep="", collapse=",")
 eval(parse(text = paste0("result1 <- data.matrix(rbind(", df.number, "))")))
 
-<<<<<<< HEAD
-# setwd("../output")
-# png("Figure1.png", width=800, height=600)
-barplot(result1[,2], ylim=c(0:1), names.arg=c(1:20), main="Follow up rate by years after end of treatment",
-        xlab="Years after end of treatment", ylab="Follow up rate")
-# dev.off()
-=======
+
 barplot(result1[,2], ylim=c(0:1), names.arg=c(1:20), family="sans",
         main="Follow up rate by years after end of treatment",
         xlab="Years after end of treatment", ylab="Follow up rate")
->>>>>>> 8d810da89fa517d6546ff105c8bb8a36e2b488c4
 
 # 横軸にデータ固定時年齢、縦軸にフォローアップ率のグラフを記述する
 # max <- max(ads$age.fixed)
@@ -207,21 +167,15 @@ for (i in 1:35) {
 }
 df.number <- paste("df_", c(1:35), sep="", collapse=",")
 eval(parse(text=paste0("result2 <- data.matrix(rbind(", df.number, "))")))
-<<<<<<< HEAD
-# png("Figure2.png", width=800, height=600)
-barplot(result2[,2],  ylim=c(0:1), names.arg=c(1:35), main="Follow up rate by age", xlab="Age at data fix", ylab="Follow up rate")
-=======
 barplot(result2[,2], ylim=c(0:1), names.arg=c(1:35), family="sans",
         main="Follow up rate by age", xlab="Age at data fix", ylab="Follow up rate")
 
 # setwd("../output")
 # png("Figure1.png", width=800, height=600)
 # png("Figure2.png", width=800, height=600)
->>>>>>> 8d810da89fa517d6546ff105c8bb8a36e2b488c4
 # dev.off()
 
 #県別のdataframeでフォローアップ率を出す
-ads$SCSTRESC <- as.numeric(ads$SCSTRESC)
 for (i in 1:47) {
   eval(parse(text = paste0("aa <- subset(ads, ads$SCSTRESC == ", i, ")")))
   県CD <- i
@@ -233,7 +187,7 @@ eval(parse(text=paste0("result3.0 <- data.matrix(rbind(", df.number, "))")))
 
 result3.1 <- merge(result3.0, 地区分類_, by.x="県CD", by.y= "JIS.code" ,all.x= T)
 result3 <- result3.1[,c(3,2)]
-barplot(result3[,c(2)],  ylim=c(0:1), main="都道府県別フォローアップ率", xlab="県名x", ylab="Follow up rate")
+barplot(result3[,c(2)],names.arg = c(result3$都道府県),las = 3,  ylim=c(0:1), main="都道府県別フォローアップ率", xlab="県名", ylab="Follow up rate")
 
 setwd("../output")
 write.csv(ads,"LUFU dataset.csv", row.names = T)
