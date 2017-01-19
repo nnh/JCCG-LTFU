@@ -170,25 +170,20 @@ eval(parse(text=paste0("result2 <- data.matrix(rbind(", df.number, "))")))
 barplot(result2[,2], ylim=c(0:1), names.arg=c(1:35), family="sans",
         main="Follow up rate by age", xlab="Age at data fix", ylab="Follow up rate")
 
-# setwd("../output")
-# png("Figure1.png", width=800, height=600)
-# png("Figure2.png", width=800, height=600)
-# dev.off()
-
 #県別のdataframeでフォローアップ率を出す
 for (i in 1:47) {
   eval(parse(text = paste0("aa <- subset(ads, ads$SCSTRESC == ", i, ")")))
   県CD <- i
   フォローアップ率 <- FollowupRate(aa)
-  eval(parse(text = paste0("df_", i, " <- data.frame(県CD, フォローアップ率)")))
+  eval(parse(text = paste0("df.", i, " <- data.frame(県CD, フォローアップ率)")))
 }
-df.number <- paste("df_", c(1:47), sep="", collapse=",")
+df.number <- paste("df.", c(1:47), sep="", collapse=",")
 eval(parse(text=paste0("result3.0 <- data.matrix(rbind(", df.number, "))")))
-
 result3.1 <- merge(result3.0, 地区分類_, by.x="県CD", by.y= "JIS.code" ,all.x= T)
-result3 <- result3.1[,c(3,2)]
-barplot(result3[,c(2)],names.arg = c(result3$都道府県),las = 3,  ylim=c(0:1), main="都道府県別フォローアップ率", xlab="県名", ylab="Follow up rate")
+result3 <- result3.1[, c(4,2)]
+barplot(result3[, c(2)], names.arg=c(result3$Prefecture), family="sans", las=3, ylim=c(0:1),
+        main="Follow-up rate by prefecture", xlab="", ylab="Follow up rate")
 
 setwd("../output")
-write.csv(ads,"LUFU dataset.csv", row.names = T)
+write.csv(ads, "LUFU dataset.csv", row.names = T)
 setwd("..")
