@@ -45,6 +45,8 @@ jacls.pick <- JACLS[, c(11,15, 21, 22, 84)]  # 生年月日,登録コード,生�
 merge1 <- merge(all02.pick, jacls.pick, by.x="JACLS登録コード", by.y="登録コード", all.x=T)
 names(merge1) <- c("SUBJID", "MHSTDTC", "DATE_END_TRT","BRTHDTC", "DTHFL", "DTHDTC", "DSSTDTC")
 merge1$STUDYID <- "ALL02"
+merge1$DTHFL[merge1$DTHFL == "true"] <- T
+merge1$DTHFL[merge1$DTHFL == "false"] <- F
 
 # JPLSG-AML-05
 # Pick up and proccessing data from AML05(終了日の列)
@@ -70,6 +72,8 @@ merge2 <- merge(aml05.pick1, jplsg.pick, by.x="J_CD", by.y="登録コード", al
 
 # Proccessing data from merge data(生死の列)
 merge2$DTHFL <- ifelse(merge2$死亡.0.なし..1.あり == "1", T, merge2$生死)
+merge2$DTHFL[merge2$DTHFL == "true"] <- T
+merge2$DTHFL[merge2$DTHFL == "false"] <- F
 
 for (i in 1:length(merge2$J_CD)) {
   if ((merge2$DTHFL[i] == T) & (merge2$死亡日[i] == "")) {
@@ -90,8 +94,6 @@ merge2 <- merge2[, c(1:4, 6, 7, 5, 8)]
 
 # JACLS-ALL-02 + JPLSG-AML-05
 data.set <- rbind(merge1, merge2)
-data.set$DTHFL[data.set$DTHFL == "true"] <- T
-data.set$DTHFL[data.set$DTHFL == "false"] <- F
 
 #解析対象集団の抽出
 data.set[is.na(data.set)] <- ""  # Replace NA to ""
