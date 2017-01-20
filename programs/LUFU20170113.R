@@ -1,4 +1,4 @@
-# LUFU
+# LTFU
 # mamiko yonejima
 # 2017/1/13
 ##################
@@ -44,13 +44,13 @@ all02.pick0 <- ALL02[, c(2, 6, 45)]  # JACLS登録コード,診断年月日,治�
 #現施設名をマージする(regitrationから施設名はとる)
 all02.pick <- merge(all02.pick0, jacls.registration, by.x= "JACLS登録コード", by.y="登録コード", all.x=T)
 #現施設名と施設コードをマージして、SCSTRESCを作成
-merge.JACLS0 <- merge(all02.pick, facil, by.x = "現施設名", by.y="施設名", all.x=T)
-merge.JACLS <- merge(merge.JACLS0, JACLS, by.x= "JACLS登録コード", by.y= "登録コード", all.x= T )
+merge.02.facil <- merge(all02.pick, facil, by.x = "現施設名", by.y="施設名", all.x=T)
+merge.JACLS <- merge(merge.02.facil, JACLS, by.x= "JACLS登録コード", by.y= "登録コード", all.x= T )
 merge.JACLS$SCSTRESC <- floor(as.numeric(merge.JACLS$施設CD)/10000000)
-jacls.pick <- merge.JACLS[, c(1, 16, 25, 26, 27, 197)]  # 登録コード,生年月日,生死,死亡日,最終確認日,施設CD
+merge1 <- merge.JACLS[, c(1, 3, 4, 16, 25:27, 197)]  # "JACLS登録コード","診断年月日","治療終了日","生年月日","生死","最終確認日","SCSTRESC" 
 # merge
-merge0 <- merge(all02.pick, jacls.pick, by="JACLS登録コード", all=T)
-merge1 <- merge0[,c(1:3,5:9)]
+#merge0 <- merge(all02.pick, jacls.pick, by="JACLS登録コード", all=T)
+#merge1 <- merge0[,c(1:3,5:9)]
 names(merge1)[c(1:7)] <- c("SUBJID", "MHSTDTC", "DATE_END_TRT","BRTHDTC", "DTHFL", "DTHDTC", "DSSTDTC")
 merge1$STUDYID <- "ALL02"
 merge1$DTHFL[merge1$DTHFL == "true"] <- T
@@ -62,9 +62,9 @@ aml05.pick <- subset(AML05, is.na(AML05$解析対象外))
 aml05.pick[is.na(aml05.pick)] <- "-"  # Replace NA to "-"
 
 for (i in 1:length(aml05.pick$J_CD)) {
-  if (aml05.pick$中止届有無0なし.1あり[i] == 1) {
-    aml05.pick$DATE_END_TRT[i] <- aml05.pick$中止届に記載された中止日[i]
-  } else if (aml05.pick$移植有無0.なし.1.あり[i] == 1) {
+  if (aml05.pick$中止届有無[i] == 1) {
+    aml05.pick$DATE_END_TRT[i] <- aml05.pick$中止日[i]
+  } else if (aml05.pick$移植有無[i] == 1) {
     aml05.pick$DATE_END_TRT[i] <- aml05.pick$移植日[i]
   } else {
     aml05.pick$DATE_END_TRT[i] <- aml05.pick$therapy最終投薬日[i]
@@ -78,11 +78,11 @@ merge.JPLSG <- merge(JPLSG, facil, by.x = "現施設名", by.y="施設名",all.x
 merge.JPLSG$SCSTRESC <-  floor(as.numeric(merge.JPLSG$施設CD)/10000000)
 
 # Pick up data from JPLSG
-jplsg.pick <- merge.JPLSG[, c(15,21:23,62)]
+jplsg.pick <- merge.JPLSG[, c(15, 11, 21:23, 62)]
 merge2 <- merge(aml05.pick1, jplsg.pick, by.x="J_CD", by.y="登録コード", all.x=T)
 
 # Proccessing data from merge data(生死の列)
-merge2$DTHFL <- ifelse(merge2$死亡.0.なし..1.あり == "1", T, merge2$生死)
+merge2$DTHFL <- ifelse(merge2$死亡.有り無し == "1", T, merge2$生死)
 merge2$DTHFL[merge2$DTHFL == "true"] <- T
 merge2$DTHFL[merge2$DTHFL == "false"] <- F
 
@@ -96,9 +96,9 @@ for (i in 1:length(merge2$J_CD)) {
   }
 }
 
-merge2$DSSTDTC <- ifelse(merge2$最終確認日 == "", merge2$AML05最終確認日, merge2$最終確認日)
+merge2$DSSTDTC <- ifelse(merge2$最終確認日 == ""), merge2$AML05最終確認日, merge2$最終確認日)## ここ修正の必要あり
 
-merge2.1 <- merge2[, c(1, 2, 5, 6, 10:12, 9)]
+merge2.1 <- merge2[, c(1, 2, 5, 6, 11:13, 10)]
 names(merge2.1)[c(1, 2, 4)] <- c("SUBJID", "MHSTDTC", "BRTHDTC")
 merge2.1$STUDYID <- "AML05"
 
@@ -136,8 +136,8 @@ for (i in 1:length(ads$SUBJID)) {
 #ads$followup.in.2y <- ifelse(ads$y.from.last.update <= 2, T, F)  # 2年以内の転帰確認
 ads$followup.in.2y <- ifelse((is.na(as.numeric(ads$y.from.last.update)) | as.numeric(ads$y.from.last.update) > 2),
                              F, T)  # 2年以内の転帰確認
-ads$death.before.2y <- ifelse((is.na(as.numeric(ads$y.from.death)) | as.numeric(ads$y.from.death) < 2),
-                              F, T)  # 2年時点の死亡確認
+ads$death.before.2y <- ifelse((is.na(as.numeric(ads$y.from.death)) | as.numeric(ads$y.from.death) <= 2),
+                              F, T)  # 2年時点の死亡確認 
 ads$y.end.trt <- YearDif(ads$DATE_END_TRT, ads$fix.date)  # 治療終了後年数
 ads$age.fixed <- YearDif(ads$BRTHDTC, ads$fix.date)  #データ固定時の年齢
 
@@ -180,10 +180,10 @@ for (i in 1:47) {
 df.number <- paste("df.", c(1:47), sep="", collapse=",")
 eval(parse(text=paste0("result3.0 <- data.matrix(rbind(", df.number, "))")))
 result3.1 <- merge(result3.0, 地区分類_, by.x="県CD", by.y= "JIS.code" ,all.x= T)
-result3 <- result3.1[, c(4,2)]
+result3 <- result3.1[, c(3,2)]
 barplot(result3[, c(2)], names.arg=c(result3$Prefecture), family="sans", las=3, ylim=c(0:1),
         main="Follow-up rate by prefecture", xlab="", ylab="Follow up rate")
 
 setwd("../output")
-write.csv(ads, "LUFU dataset.csv", row.names = T)
+write.csv(ads, "LTFU dataset.csv", row.names = T)
 setwd("..")
