@@ -22,24 +22,19 @@ FollowupRate <- function(dataframe) {
 kFixDateAml05 <- "2016/10/05"
 kFixDateAll02 <- "2016/05/12"
 
-setwd("./rawdata")
+# Read external data
+setwd("./input")
+prefecture <- read.csv('Prefecture.csv', as.is=T, fileEncoding='CP932')
 
-# Making File List
-list <- as.data.frame(list.files())
-list$no <- c(1:nrow(list))
-list$DFname <- substr(list.files(), 1, 5)
-names(list)[1] <- "file_name"
-
-# Read CSV data
-for (i in 1:length(list$no)) {
-  eval(
-    parse(
-      text = paste0(list$DFname[i], "<- read.csv('", list$file_name[i], "', as.is=T, fileEncoding='CP932')")
-      )
-    )
+# Read CSV rawdata
+setwd("../rawdata")
+filenames <- list.files()
+for (i in 1:length(filenames)) {
+  assign(substr(filenames[i], 1, 5), read.csv(filenames[i], as.is=T, fileEncoding='CP932'))
 }
-jacls.registration <- regis[,c(7, 15)]
+
 # JACLS-ALL-02
+jacls.registration <- regis[,c(7, 15)]
 all02.pick0 <- ALL02[, c(2, 6, 45)]  # JACLS登録コード,診断年月日,治療終了日※3
 #現施設名をマージする(regitrationから施設名はとる)
 all02.pick <- merge(all02.pick0, jacls.registration, by.x= "JACLS登録コード", by.y="登録コード", all.x=T)
@@ -96,7 +91,7 @@ for (i in 1:length(merge2$J_CD)) {
   }
 }
 
-merge2$DSSTDTC <- ifelse(merge2$最終確認日 == ""), merge2$AML05最終確認日, merge2$最終確認日)## ここ修正の必要あり
+merge2$DSSTDTC <- ifelse((merge2$最終確認日 == ""), merge2$AML05最終確認日, merge2$最終確認日)  ## ここ修正の必要あり
 
 merge2.1 <- merge2[, c(1, 2, 5, 6, 11:13, 10)]
 names(merge2.1)[c(1, 2, 4)] <- c("SUBJID", "MHSTDTC", "BRTHDTC")
@@ -179,8 +174,8 @@ for (i in 1:47) {
 }
 df.number <- paste("df.", c(1:47), sep="", collapse=",")
 eval(parse(text=paste0("result3.0 <- data.matrix(rbind(", df.number, "))")))
-result3.1 <- merge(result3.0, 地区分類_, by.x="県CD", by.y= "JIS.code" ,all.x= T)
-result3 <- result3.1[, c(3,2)]
+result3.1 <- merge(result3.0, prefecture, by.x="県CD", by.y= "JIS.code" ,all.x= T)
+result3 <- result3.1[, c(4,2)]
 barplot(result3[, c(2)], names.arg=c(result3$Prefecture), family="sans", las=3, ylim=c(0:1),
         main="Follow-up rate by prefecture", xlab="", ylab="Follow up rate")
 
