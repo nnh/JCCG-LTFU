@@ -24,7 +24,11 @@ kFixDateAll02 <- "2016/05/12"
 
 # Read external data
 setwd("./input")
+<<<<<<< HEAD
 prefecture <- read.csv('Prefecture.csv', as.is=T)
+=======
+prefecture <- read.csv('Prefecture.csv', as.is=T, fileEncoding='CP932')
+>>>>>>> b0223bf48bc01b8545b86aff831e16d16388f68f
 
 # Read CSV rawdata
 setwd("../rawdata")
