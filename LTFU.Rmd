@@ -31,7 +31,7 @@ barplot(result3[, c(2)], names.arg=c(result3$Prefecture), family="sans", las=3, 
 
 ## 変数
 |変数|内容|
-| :- |  :- | 
+|----|----|
 |SUBJID|症例番号|
 |MHSTDTC|診断日|
 |DATE_END_TRT|治療終了日|
