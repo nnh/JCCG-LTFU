@@ -26,7 +26,7 @@ kFixDateAll02 <- "2016/05/12"
 setwd("./input")
 prefecture <- read.csv('Prefecture.csv', as.is=T, fileEncoding='UTF-8-BOM')
 
-# Read CSV rawdata, 最初の5文字をdataframe名にして読み込み
+# Read CSV rawdata, ファイル名の最初の5文字をdataframe名にして読み込む
 setwd("../rawdata")
 filenames <- list.files()
 for (i in 1:length(filenames)) {
@@ -138,47 +138,31 @@ ads$y.from.end.trt <- YearDif(ads$date.end.trt, ads$fix.date)  # 治療終了後
 ads$age.fixed <- YearDif(ads$BRTHDTC, ads$fix.date)  #データ固定時の年齢
 
 # 横軸に治療後年数、縦軸にフォローアップ率のグラフを記述する
-# max <- max(ads$y.from.end.trt)
-for (i in 1:20) {
-  eval(parse(text = paste0("aa <- subset(ads, ads$y.from.end.trt == ", i, ")")))
-  治療終了後年数 <- i
-  フォローアップ率 <- FollowupRate(aa)
-  eval(parse(text = paste0("df", i, " <- data.frame(治療終了後年数, フォローアップ率)")))
+ads1 <- ads[!is.na(ads$y.from.end.trt), ]
+follow.up.rate1 <- NULL
+for (i in 1:max(ads1$y.from.end.trt)) {
+  follow.up.rate1[i] <- FollowupRate(ads1[ads1$y.from.end.trt == i, ])
 }
-df.number <- paste("df", c(1:20), sep="", collapse=",")
-eval(parse(text = paste0("result1 <- data.matrix(rbind(", df.number, "))")))
-
-
-barplot(result1[,2], ylim=c(0:1), names.arg=c(1:20), family="sans",
+barplot(follow.up.rate1, ylim=c(0:1), names.arg=c(1:max(ads1$y.from.end.trt)), family="sans",
         main="Follow up rate by years after end of treatment",
         xlab="Years after end of treatment", ylab="Follow up rate")
 
 # 横軸にデータ固定時年齢、縦軸にフォローアップ率のグラフを記述する
-# max <- max(ads$age.fixed)
-for (i in 1:35) {
-  eval(parse(text = paste0("aa <- subset(ads, ads$age.fixed == ", i, ")")))
-  データ固定時年齢 <- i
-  フォローアップ率 <- FollowupRate(aa)
-  eval(parse(text = paste0("df_", i, " <- data.frame(データ固定時年齢, フォローアップ率)")))
+ads2 <- ads[!is.na(ads$age.fixed), ]
+follow.up.rate2 <- NULL
+for (i in 1:max(ads2$age.fixed)) {
+  follow.up.rate2[i] <- FollowupRate(ads2[ads2$age.fixed == i, ])
 }
-df.number <- paste("df_", c(1:35), sep="", collapse=",")
-eval(parse(text=paste0("result2 <- data.matrix(rbind(", df.number, "))")))
-barplot(result2[,2], ylim=c(0:1), names.arg=c(1:35), family="sans",
+barplot(follow.up.rate2, ylim=c(0:1), names.arg=c(1:max(ads2$age.fixed)), family="sans",
         main="Follow up rate by age", xlab="Age at data fix", ylab="Follow up rate")
 
 #県別のdataframeでフォローアップ率を出す
+follow.up.rate3 <- NULL
 for (i in 1:47) {
-  eval(parse(text = paste0("aa <- subset(ads, ads$SCSTRESC == ", i, ")")))
-  県CD <- i
-  フォローアップ率 <- FollowupRate(aa)
-  eval(parse(text = paste0("df.", i, " <- data.frame(県CD, フォローアップ率)")))
+  follow.up.rate3[i] <- FollowupRate(ads[ads$SCSTRESC == i, ])
 }
-df.number <- paste("df.", c(1:47), sep="", collapse=",")
-eval(parse(text=paste0("result3.0 <- data.matrix(rbind(", df.number, "))")))
-result3.1 <- merge(result3.0, prefecture, by.x="県CD", by.y="JIS.code", all.x= T)
-result3 <- result3.1[, c(4,2)]
-barplot(result3[, c(2)], names.arg=c(result3$Prefecture), family="sans", las=3, ylim=c(0:1),
-        main="Follow-up rate by prefecture", xlab="", ylab="Follow up rate")
+barplot(follow.up.rate3, names.arg=prefecture$Prefecture, family="sans", las=3, ylim=c(0:1),
+        main="Follow-up rate by prefecture", xlab="", ylab="Follow up rate", cex.names=0.7)
 
 setwd("../output")
 write.csv(ads, "LTFU dataset.csv", row.names = T)

@@ -12,20 +12,20 @@ source("./programs/LUFU20170113.R", encoding = "UTF-8")
 
 ## 横軸に治療後年数、縦軸にフォローアップ率のグラフを記述する
 ```{r Years after end of treatment, echo=FALSE}
-barplot(result1[,2], ylim=c(0:1), names.arg=c(1:20), family="sans",
+barplot(follow.up.rate1, ylim=c(0:1), names.arg=c(1:max(ads1$y.from.end.trt)), family="sans",
         main="Follow up rate by years after end of treatment",
         xlab="Years after end of treatment", ylab="Follow up rate")
 ```
 
 ## 横軸にデータ固定時年齢、縦軸にフォローアップ率のグラフを記述する
 ```{r Follow up rate by age, echo=FALSE}
-barplot(result2[,2], ylim=c(0:1), names.arg=c(1:35), family="sans",
+barplot(follow.up.rate2, ylim=c(0:1), names.arg=c(1:max(ads2$age.fixed)), family="sans",
         main="Follow up rate by age", xlab="Age at data fix", ylab="Follow up rate")
 ```
 
 ## 横軸に県、縦軸にフォローアップ率のグラフを記述する
 ```{r Follow-up rate by prefecture, echo=FALSE, fig.width=7}
-barplot(result3[, c(2)], names.arg=c(result3$Prefecture), family="sans", las=3, ylim=c(0:1),
+barplot(follow.up.rate3, names.arg=prefecture$Prefecture, family="sans", las=3, ylim=c(0:1),
         main="Follow-up rate by prefecture", xlab="", ylab="Follow up rate", cex.names=0.7)
 ```
 
@@ -46,5 +46,5 @@ barplot(result3[, c(2)], names.arg=c(result3$Prefecture), family="sans", las=3, 
 |y.from.death|死亡日からの満年数|
 |followup.in.2y|2年以内にフォローされているか否か|
 |death.before.2y|2年より前に死亡が確認されているか否か|
-|y.end.trt|治療終了日からの満年数|
+|y.from.end.trt|治療終了日からの満年数|
 |age.fixed|データ固定日時点での満年齢|
