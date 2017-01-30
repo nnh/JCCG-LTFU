@@ -7,7 +7,7 @@ output: word_document
 
 ```{r setup, include=FALSE}
 knitr::opts_chunk$set(echo = TRUE)
-source("./programs/LUFU20170113.R")
+source("./programs/LUFU20170113.R", encoding = "UTF-8")
 ```
 
 ## 横軸に治療後年数、縦軸にフォローアップ率のグラフを記述する
