@@ -34,15 +34,15 @@ for (i in 1:length(filenames)) {
 }
 
 # JACLS-ALL-02
-jacls.registration <- regis[,c(7, 15)]  # 現施設名,登録コード
-all02.pick0 <- ALL02[, c(2, 6, 45)]  # JACLS登録コード,診断年月日,治療終了日※3
+jacls.registration <- regis[c("現施設名", "登録コード")]
+all02.pick0 <- ALL02[c("JACLS登録コード", "診断年月日", "治療終了日")]
 # 現施設名をマージする(regitrationから施設名はとる)
 all02.pick <- merge(all02.pick0, jacls.registration, by.x="JACLS登録コード", by.y="登録コード", all.x=T)
 # 現施設名と施設コードをマージして、SCSTRESC（県コード）を作成
 merge.02.facil <- merge(all02.pick, facil, by.x="現施設名", by.y="施設名", all.x=T)
 merge.JACLS <- merge(merge.02.facil, JACLS, by.x="JACLS登録コード", by.y="登録コード", all.x=T)
 merge.JACLS$SCSTRESC <- floor(as.numeric(merge.JACLS$施設CD) / 10000000)  # 施設コードの上2桁が県コード
-merge1 <- merge.JACLS[, c(1, 3, 4, 16, 25:27, 197)]  # JACLS登録コード,診断年月日,治療終了日,生年月日,生死,最終確認日,SCSTRESC
+merge1 <- merge.JACLS[c("JACLS登録コード", "診断年月日", "治療終了日", "生年月日", "生死", "死亡日", "最終確認日", "SCSTRESC")]
 # merge
 # merge0 <- merge(all02.pick, jacls.pick, by="JACLS登録コード", all=T)
 # merge1 <- merge0[,　c(1:3,5:9)]
@@ -66,14 +66,14 @@ for (i in 1:length(aml05.pick$J_CD)) {
   }
 }
 
-aml05.pick1 <- aml05.pick[, c(2, 5, 14:16)]
+aml05.pick1 <- aml05.pick[c("J_CD", "診断日", "死亡.有り無し", "最終確認日", "date.end.trt")]
 names(aml05.pick1)[4] <- "AML05最終確認日"
 #現施設名と施設コードをマージして、SCSTRESC(県コード)を作成
 merge.JPLSG <- merge(JPLSG, facil, by.x="現施設名", by.y="施設名", all.x=T)
 merge.JPLSG$SCSTRESC <- floor(as.numeric(merge.JPLSG$施設CD) / 10000000)  # 施設コードの上2桁が県コード
 
 # Pick up data from JPLSG
-jplsg.pick <- merge.JPLSG[, c(15, 11, 21:23, 62)]  # 登録コード,生年月日,生死,死亡日,最終確認日,最終確認日.1
+jplsg.pick <- merge.JPLSG[c("登録コード", "生年月日", "生死", "死亡日", "最終確認日", "SCSTRESC")]
 merge2 <- merge(aml05.pick1, jplsg.pick, by.x="J_CD", by.y="登録コード", all.x=T)
 
 # Proccessing data from merge data(生死の列)
@@ -94,7 +94,7 @@ for (i in 1:length(merge2$J_CD)) {
 # TODO(yonejima): ここ修正の必要あり
 merge2$DSSTDTC <- ifelse((merge2$最終確認日 == ""), merge2$AML05最終確認日, merge2$最終確認日)
 
-merge2.1 <- merge2[, c(1, 2, 5, 6, 11:13, 10)]  # J_CD,診断日,date.end.trt,生年月日,DTHFL,DTHDTC,DSSTDTC,SCSTRESC
+merge2.1 <- merge2[c("J_CD", "診断日", "date.end.trt", "生年月日", "DTHFL", "DTHDTC", "DSSTDTC", "SCSTRESC")]
 names(merge2.1)[c(1, 2, 4)] <- c("SUBJID", "MHSTDTC", "BRTHDTC")
 merge2.1$STUDYID <- "AML05"
 
