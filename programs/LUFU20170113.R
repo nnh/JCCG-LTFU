@@ -26,7 +26,7 @@ kFixDateAll02 <- "2016/05/12"
 setwd("./input")
 prefecture <- read.csv('Prefecture.csv', as.is=T, fileEncoding='UTF-8-BOM')
 
-# Read CSV rawdata, 最初の5文字をdataframe名にして読み込み
+# Read CSV rawdata, ファイル名の最初の5文字をdataframe名にして読み込む
 setwd("../rawdata")
 filenames <- list.files()
 for (i in 1:length(filenames)) {
@@ -162,7 +162,7 @@ for (i in 1:47) {
   follow.up.rate3[i] <- FollowupRate(ads[ads$SCSTRESC == i, ])
 }
 barplot(follow.up.rate3, names.arg=prefecture$Prefecture, family="sans", las=3, ylim=c(0:1),
-        main="Follow-up rate by prefecture", xlab="", ylab="Follow up rate")
+        main="Follow-up rate by prefecture", xlab="", ylab="Follow up rate", cex.names=0.7)
 
 setwd("../output")
 write.csv(ads, "LTFU dataset.csv", row.names = T)

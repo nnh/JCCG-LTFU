@@ -26,7 +26,7 @@ barplot(follow.up.rate2, ylim=c(0:1), names.arg=c(1:max(ads2$age.fixed)), family
 ## 横軸に県、縦軸にフォローアップ率のグラフを記述する
 ```{r Follow-up rate by prefecture, echo=FALSE, fig.width=7}
 barplot(follow.up.rate3, names.arg=prefecture$Prefecture, family="sans", las=3, ylim=c(0:1),
-        main="Follow-up rate by prefecture", xlab="", ylab="Follow up rate")
+        main="Follow-up rate by prefecture", xlab="", ylab="Follow up rate", cex.names=0.7)
 ```
 
 ## 変数
