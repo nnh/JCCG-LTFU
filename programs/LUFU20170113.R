@@ -43,9 +43,7 @@ merge.02.facil <- merge(all02.pick, facil, by.x="現施設名", by.y="施設名"
 merge.JACLS <- merge(merge.02.facil, JACLS, by.x="JACLS登録コード", by.y="登録コード", all.x=T)
 merge.JACLS$SCSTRESC <- floor(as.numeric(merge.JACLS$施設CD) / 10000000)  # 施設コードの上2桁が県コード
 merge1 <- merge.JACLS[c("JACLS登録コード", "診断年月日", "治療終了日", "生年月日", "生死", "死亡日", "最終確認日", "SCSTRESC")]
-# merge
-# merge0 <- merge(all02.pick, jacls.pick, by="JACLS登録コード", all=T)
-# merge1 <- merge0[,　c(1:3,5:9)]
+
 names(merge1)[c(1:7)] <- c("SUBJID", "MHSTDTC", "date.end.trt", "BRTHDTC", "DTHFL", "DTHDTC", "DSSTDTC")
 merge1$STUDYID <- "ALL02"
 merge1$DTHFL[merge1$DTHFL == "true"] <- T
@@ -91,8 +89,8 @@ for (i in 1:length(merge2$J_CD)) {
   }
 }
 
-# TODO(yonejima): ここ修正の必要あり
-merge2$DSSTDTC <- ifelse((merge2$最終確認日 == ""), merge2$AML05最終確認日, merge2$最終確認日)
+
+merge2$DSSTDTC <- ifelse((merge2$最終確認日 == ""), merge2$AML05最終確認日, merge2$最終確認日))
 
 merge2.1 <- merge2[c("J_CD", "診断日", "date.end.trt", "生年月日", "DTHFL", "DTHDTC", "DSSTDTC", "SCSTRESC")]
 names(merge2.1)[c(1, 2, 4)] <- c("SUBJID", "MHSTDTC", "BRTHDTC")
@@ -101,27 +99,11 @@ merge2.1$STUDYID <- "AML05"
 # JACLS-ALL-02 + JPLSG-AML-05
 data.set <- rbind(merge1, merge2.1)
 
-#解析対象集団の抽出
+
 data.set[is.na(data.set)] <- ""  # Replace NA to ""
 data.set$fix.date <- ifelse(data.set$STUDYID == "AML05", kFixDateAml05, kFixDateAll02)
-# for (i in 1:length(data.set$SUBJID)) {
-#   if ((data.set$DTHDTC[i]! = "") & (data.set$DTHDTC[i] <= fix.date)) {
-#     data.set$anal.obj[i] <- "death prev.20141031"
-#   } else if (data.set$DSSTDTC[i] == "") {
-#     data.set$anal.obj[i] <- "unknown DSSTDTC"
-#   } else if ((data.set$DTHFL[i] == T) & (data.set$DTHDTC[i] == "")) {
-#     data.set$anal.obj[i] <- "unknown DTHDTC"
-#   } else if (data.set$date.end.trt[i] == "") {
-#     data.set$anal.obj[i] <- "unknown date end treat"
-#   } else if (data.set$DTHFL[i] == "") {
-#     data.set$anal.obj[i] <- "unknown DTHFL"
-#   } else {
-#     data.set$anal.obj[i] <- "A"
-#   }
-# }
-# breakdown <- data.matrix(table(data.set$anal.obj))  # 内訳
-# ads <- subset(data.set,data.set$anal.obj == "A")  # 解析対象のみ抽出
-ads <- data.set
+
+ads <- data.set  # 解析用のデータセット作成
 
 #ads$fix.date <- ifelse(ads$STUDYID == "AML05", kFixDateAml05, kFixDateAll02)
 
@@ -129,7 +111,7 @@ ads$y.from.last.update <- YearDif(ads$DSSTDTC, ads$fix.date)  #y.from.last.updat
 for (i in 1:length(ads$SUBJID)) {
   ads$y.from.death[i] <- YearDif(ads$DTHDTC[i], ads$fix.date[i])  # y.from.deathにはデータ固定日-死亡日が入る
 }
-#ads$followup.in.2y <- ifelse(ads$y.from.last.update <= 2, T, F)  # 2年以内の転帰確認
+
 ads$followup.in.2y <- ifelse((is.na(as.numeric(ads$y.from.last.update)) | as.numeric(ads$y.from.last.update) > 2),
                              F, T)  # 2年以内の転帰確認
 ads$death.before.2y <- ifelse((is.na(as.numeric(ads$y.from.death)) | as.numeric(ads$y.from.death) <= 2),
