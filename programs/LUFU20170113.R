@@ -117,7 +117,9 @@ ads$followup.in.2y <- ifelse((is.na(as.numeric(ads$y.from.last.update)) | as.num
 ads$death.before.2y <- ifelse((is.na(as.numeric(ads$y.from.death)) | as.numeric(ads$y.from.death) <= 2),
                               F, T)  # 2年時点の死亡確認
 ads$y.from.end.trt <- YearDif(ads$date.end.trt, ads$fix.date)  # 治療終了後年数
-ads$age.fixed <- YearDif(ads$BRTHDTC, ads$fix.date)  #データ固定時の年齢
+ads$age.at.datafix <- YearDif(ads$BRTHDTC, ads$fix.date)  # データ固定時の年齢
+ads$age.at.followup <- YearDif(ads$BRTHDTC, ads$DSSTDTC)  # 最終転帰更新日時点の年齢
+missing.value <- ads[ads$DSSTDTC == "" | ads$BRTHDTC == "", ]  # 最終転帰更新日または生年月日が無い症例
 
 # 横軸に治療後年数、縦軸にフォローアップ率のグラフを記述する
 ads1 <- ads[!is.na(ads$y.from.end.trt), ]
@@ -140,25 +142,41 @@ for (i in 1:max(ads1$y.from.end.trt)) {
   denominator.end.trt.aml05[i] <- sum(ads1[ads1$y.from.end.trt == i & ads1$STUDYID == "AML05", ]$death.before.2y == F)
 }
 barplot(rate.end.trt, ylim=c(0:1), names.arg=c(1:max(ads1$y.from.end.trt)), family="sans",
-        main="Follow up rate by years after end of treatment",
+        main="Follow-up rate by years after end of treatment",
         xlab="Years after end of treatment", ylab="Follow up rate")
 barplot(rate.end.trt.all02, ylim=c(0:1), names.arg=c(1:max(ads1$y.from.end.trt)), family="sans",
-        main="Follow up rate by years after end of treatment, ALL02",
+        main="Follow-up rate by years after end of treatment, ALL02",
         xlab="Years after end of treatment", ylab="Follow up rate")
 barplot(rate.end.trt.aml05, ylim=c(0:1), names.arg=c(1:max(ads1$y.from.end.trt)), family="sans",
-        main="Follow up rate by years after end of treatment, AML05",
+        main="Follow-up rate by years after end of treatment, AML05",
         xlab="Years after end of treatment", ylab="Follow up rate")
 
 # 横軸にデータ固定時年齢、縦軸にフォローアップ率のグラフを記述する
-ads2 <- ads[!is.na(ads$age.fixed), ]
-f.u.rate2 <- NULL
-denominator2 <- NULL
-for (i in 1:max(ads2$age.fixed)) {
-  f.u.rate2[i] <- FollowupRate(ads2[ads2$age.fixed == i, ])
-  denominator2[i] <- sum(ads2[ads2$age.fixed == i, ]$death.before.2y == F)
+ads2 <- ads[!is.na(ads$age.at.datafix), ]
+rate.age.datafix <- NULL
+rate.age.datafix.all02 <- NULL
+rate.age.datafix.aml05 <- NULL
+denominator.age.datafix <- NULL
+denominator.age.datafix.all02 <- NULL
+denominator.age.datafix.aml05 <- NULL
+for (i in 1:max(ads2$age.at.datafix)) {
+  rate.age.datafix[i] <- FollowupRate(ads2[ads2$age.at.datafix == i, ])
+  denominator.age.datafix[i] <- sum(ads2[ads2$age.at.datafix == i, ]$death.before.2y == F)
 }
-barplot(f.u.rate2, ylim=c(0:1), names.arg=c(1:max(ads2$age.fixed)), family="sans",
-        main="Follow up rate by age at data fix", xlab="Age at data fix", ylab="Follow up rate")
+for (i in 1:max(ads2$age.at.datafix)) {
+  rate.age.datafix.all02[i] <- FollowupRate(ads2[ads2$age.at.datafix == i & ads2$STUDYID == "ALL02", ])
+  denominator.age.datafix.all02[i] <- sum(ads2[ads2$age.at.datafix == i & ads2$STUDYID == "ALL02", ]$death.before.2y == F)
+}
+for (i in 1:max(ads2$age.at.datafix)) {
+  rate.age.datafix.aml05[i] <- FollowupRate(ads2[ads2$age.at.datafix == i & ads2$STUDYID == "AML05", ])
+  denominator.age.datafix.aml05[i] <- sum(ads2[ads2$age.at.datafix == i & ads2$STUDYID == "AML05", ]$death.before.2y == F)
+}
+barplot(rate.age.datafix, ylim=c(0:1), names.arg=c(1:max(ads2$age.at.datafix)), family="sans",
+        main="Follow-up rate by age at data fix", xlab="Age at data fix", ylab="Follow up rate")
+barplot(rate.age.datafix.all02, ylim=c(0:1), names.arg=c(1:max(ads2$age.at.datafix)), family="sans",
+        main="Follow-up rate by age at data fix, ALL02", xlab="Age at data fix", ylab="Follow up rate")
+barplot(rate.age.datafix.aml05, ylim=c(0:1), names.arg=c(1:max(ads2$age.at.datafix)), family="sans",
+        main="Follow-up rate by age at data fix, AML05", xlab="Age at data fix", ylab="Follow up rate")
 
 #県別のdataframeでフォローアップ率を出す
 f.u.rate3 <- NULL
@@ -171,7 +189,6 @@ barplot(f.u.rate3, names.arg=prefecture$Prefecture, family="sans", las=3, ylim=c
         main="Follow-up rate by prefecture", xlab="", ylab="Follow up rate", cex.names=0.7)
 
 # 横軸に最終転帰更新日時点年齢、縦軸にフォローアップ率のグラフを記述する
-ads$age.at.followup <- YearDif(ads$BRTHDTC, ads$DSSTDTC)
 ads4 <- ads[!is.na(ads$age.at.followup), ]
 f.u.rate4 <- NULL
 denominator4 <- NULL
@@ -180,8 +197,9 @@ for (i in 1:max(ads4$age.at.followup)) {
   denominator4[i] <- sum(ads4[ads4$age.at.followup == i, ]$death.before.2y == F)
 }
 barplot(f.u.rate4, ylim=c(0:1), names.arg=c(1:max(ads4$age.at.followup)), family="sans",
-        main="Follow up rate by age at follow-up", xlab="Age at follow-up", ylab="Follow up rate")
+        main="Follow-up rate by age at follow-up", xlab="Age at follow-up", ylab="Follow up rate")
 
 setwd("../output")
-write.csv(ads, "LTFU dataset.csv", row.names = T)
+write.csv(ads, "LTFU dataset.csv", row.names=T)
+write.csv(missing.value, "LTFU missing value.csv", row.names=T)
 setwd("..")

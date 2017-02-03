@@ -2,6 +2,8 @@
 ### Added by Tosh ###
 /output/
 /rawdata/
+*.html
+*.docx
 ### Windows ###
 # Windows image file caches
 Thumbs.db
