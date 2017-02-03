@@ -90,7 +90,7 @@ for (i in 1:length(merge2$J_CD)) {
 }
 
 
-merge2$DSSTDTC <- ifelse((merge2$最終確認日 == ""), merge2$AML05最終確認日, merge2$最終確認日))
+merge2$DSSTDTC <- ifelse((merge2$最終確認日 == ""), merge2$AML05最終確認日, merge2$最終確認日)
 
 merge2.1 <- merge2[c("J_CD", "診断日", "date.end.trt", "生年月日", "DTHFL", "DTHDTC", "DSSTDTC", "SCSTRESC")]
 names(merge2.1)[c(1, 2, 4)] <- c("SUBJID", "MHSTDTC", "BRTHDTC")
@@ -121,30 +121,66 @@ ads$age.fixed <- YearDif(ads$BRTHDTC, ads$fix.date)  #データ固定時の年�
 
 # 横軸に治療後年数、縦軸にフォローアップ率のグラフを記述する
 ads1 <- ads[!is.na(ads$y.from.end.trt), ]
-follow.up.rate1 <- NULL
+rate.end.trt <- NULL
+rate.end.trt.all02 <- NULL
+rate.end.trt.aml05 <- NULL
+denominator.end.trt <- NULL
+denominator.end.trt.all02 <- NULL
+denominator.end.trt.aml05 <- NULL
 for (i in 1:max(ads1$y.from.end.trt)) {
-  follow.up.rate1[i] <- FollowupRate(ads1[ads1$y.from.end.trt == i, ])
+  rate.end.trt[i] <- FollowupRate(ads1[ads1$y.from.end.trt == i, ])
+  denominator.end.trt[i] <- sum(ads1[ads1$y.from.end.trt == i, ]$death.before.2y == F)
 }
-barplot(follow.up.rate1, ylim=c(0:1), names.arg=c(1:max(ads1$y.from.end.trt)), family="sans",
+for (i in 1:max(ads1$y.from.end.trt)) {
+  rate.end.trt.all02[i] <- FollowupRate(ads1[ads1$y.from.end.trt == i & ads1$STUDYID == "ALL02", ])
+  denominator.end.trt.all02[i] <- sum(ads1[ads1$y.from.end.trt == i & ads1$STUDYID == "ALL02", ]$death.before.2y == F)
+}
+for (i in 1:max(ads1$y.from.end.trt)) {
+  rate.end.trt.aml05[i] <- FollowupRate(ads1[ads1$y.from.end.trt == i & ads1$STUDYID == "AML05", ])
+  denominator.end.trt.aml05[i] <- sum(ads1[ads1$y.from.end.trt == i & ads1$STUDYID == "AML05", ]$death.before.2y == F)
+}
+barplot(rate.end.trt, ylim=c(0:1), names.arg=c(1:max(ads1$y.from.end.trt)), family="sans",
         main="Follow up rate by years after end of treatment",
+        xlab="Years after end of treatment", ylab="Follow up rate")
+barplot(rate.end.trt.all02, ylim=c(0:1), names.arg=c(1:max(ads1$y.from.end.trt)), family="sans",
+        main="Follow up rate by years after end of treatment, ALL02",
+        xlab="Years after end of treatment", ylab="Follow up rate")
+barplot(rate.end.trt.aml05, ylim=c(0:1), names.arg=c(1:max(ads1$y.from.end.trt)), family="sans",
+        main="Follow up rate by years after end of treatment, AML05",
         xlab="Years after end of treatment", ylab="Follow up rate")
 
 # 横軸にデータ固定時年齢、縦軸にフォローアップ率のグラフを記述する
 ads2 <- ads[!is.na(ads$age.fixed), ]
-follow.up.rate2 <- NULL
+f.u.rate2 <- NULL
+denominator2 <- NULL
 for (i in 1:max(ads2$age.fixed)) {
-  follow.up.rate2[i] <- FollowupRate(ads2[ads2$age.fixed == i, ])
+  f.u.rate2[i] <- FollowupRate(ads2[ads2$age.fixed == i, ])
+  denominator2[i] <- sum(ads2[ads2$age.fixed == i, ]$death.before.2y == F)
 }
-barplot(follow.up.rate2, ylim=c(0:1), names.arg=c(1:max(ads2$age.fixed)), family="sans",
-        main="Follow up rate by age", xlab="Age at data fix", ylab="Follow up rate")
+barplot(f.u.rate2, ylim=c(0:1), names.arg=c(1:max(ads2$age.fixed)), family="sans",
+        main="Follow up rate by age at data fix", xlab="Age at data fix", ylab="Follow up rate")
 
 #県別のdataframeでフォローアップ率を出す
-follow.up.rate3 <- NULL
+f.u.rate3 <- NULL
+denominator3 <- NULL
 for (i in 1:47) {
-  follow.up.rate3[i] <- FollowupRate(ads[ads$SCSTRESC == i, ])
+  f.u.rate3[i] <- FollowupRate(ads[ads$SCSTRESC == i, ])
+  denominator3[i] <- sum(ads[ads$SCSTRESC == i, ]$death.before.2y == F)
 }
-barplot(follow.up.rate3, names.arg=prefecture$Prefecture, family="sans", las=3, ylim=c(0:1),
+barplot(f.u.rate3, names.arg=prefecture$Prefecture, family="sans", las=3, ylim=c(0:1),
         main="Follow-up rate by prefecture", xlab="", ylab="Follow up rate", cex.names=0.7)
+
+# 横軸に最終転帰更新日時点年齢、縦軸にフォローアップ率のグラフを記述する
+ads$age.at.followup <- YearDif(ads$BRTHDTC, ads$DSSTDTC)
+ads4 <- ads[!is.na(ads$age.at.followup), ]
+f.u.rate4 <- NULL
+denominator4 <- NULL
+for (i in 1:max(ads4$age.at.followup)) {
+  f.u.rate4[i] <- FollowupRate(ads4[ads4$age.at.followup == i, ])
+  denominator4[i] <- sum(ads4[ads4$age.at.followup == i, ]$death.before.2y == F)
+}
+barplot(f.u.rate4, ylim=c(0:1), names.arg=c(1:max(ads4$age.at.followup)), family="sans",
+        main="Follow up rate by age at follow-up", xlab="Age at follow-up", ylab="Follow up rate")
 
 setwd("../output")
 write.csv(ads, "LTFU dataset.csv", row.names = T)
