@@ -43,7 +43,6 @@ merge.02.facil <- merge(all02.pick, facil, by.x="現施設名", by.y="施設名"
 merge.JACLS <- merge(merge.02.facil, JACLS, by.x="JACLS登録コード", by.y="登録コード", all.x=T)
 merge.JACLS$SCSTRESC <- floor(as.numeric(merge.JACLS$施設CD) / 10000000)  # 施設コードの上2桁が県コード
 merge1 <- merge.JACLS[c("JACLS登録コード", "診断年月日", "治療終了日", "生年月日", "生死", "死亡日", "最終確認日", "SCSTRESC")]
-
 names(merge1)[c(1:7)] <- c("SUBJID", "MHSTDTC", "date.end.trt", "BRTHDTC", "DTHFL", "DTHDTC", "DSSTDTC")
 merge1$STUDYID <- "ALL02"
 merge1$DTHFL[merge1$DTHFL == "true"] <- T
@@ -89,29 +88,20 @@ for (i in 1:length(merge2$J_CD)) {
   }
 }
 
-
 merge2$DSSTDTC <- ifelse((merge2$最終確認日 == ""), merge2$AML05最終確認日, merge2$最終確認日)
-
 merge2.1 <- merge2[c("J_CD", "診断日", "date.end.trt", "生年月日", "DTHFL", "DTHDTC", "DSSTDTC", "SCSTRESC")]
 names(merge2.1)[c(1, 2, 4)] <- c("SUBJID", "MHSTDTC", "BRTHDTC")
 merge2.1$STUDYID <- "AML05"
 
 # JACLS-ALL-02 + JPLSG-AML-05
-data.set <- rbind(merge1, merge2.1)
+ads <- rbind(merge1, merge2.1)
 
-
-data.set[is.na(data.set)] <- ""  # Replace NA to ""
-data.set$fix.date <- ifelse(data.set$STUDYID == "AML05", kFixDateAml05, kFixDateAll02)
-
-ads <- data.set  # 解析用のデータセット作成
-
-#ads$fix.date <- ifelse(ads$STUDYID == "AML05", kFixDateAml05, kFixDateAll02)
-
+ads[is.na(ads)] <- ""  # Replace NA to ""
+ads$fix.date <- ifelse(ads$STUDYID == "AML05", kFixDateAml05, kFixDateAll02)
 ads$y.from.last.update <- YearDif(ads$DSSTDTC, ads$fix.date)  #y.from.last.updateにはデータ固定日-最終確認日が入る
 for (i in 1:length(ads$SUBJID)) {
   ads$y.from.death[i] <- YearDif(ads$DTHDTC[i], ads$fix.date[i])  # y.from.deathにはデータ固定日-死亡日が入る
 }
-
 ads$followup.in.2y <- ifelse((is.na(as.numeric(ads$y.from.last.update)) | as.numeric(ads$y.from.last.update) > 2),
                              F, T)  # 2年以内の転帰確認
 ads$death.before.2y <- ifelse((is.na(as.numeric(ads$y.from.death)) | as.numeric(ads$y.from.death) <= 2),
