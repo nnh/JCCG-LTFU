@@ -190,14 +190,30 @@ barplot(f.u.rate3, names.arg=prefecture$Prefecture, family="sans", las=3, ylim=c
 
 # 横軸に最終転帰更新日時点年齢、縦軸にフォローアップ率のグラフを記述する
 ads4 <- ads[!is.na(ads$age.at.followup), ]
-f.u.rate4 <- NULL
-denominator4 <- NULL
+rate.age.followup <- NULL
+rate.age.followup.all02 <- NULL
+rate.age.followup.aml05 <- NULL
+denominator.age.followup <- NULL
+denominator.age.followup.all02 <- NULL
+denominator.age.followup.aml05 <- NULL
 for (i in 1:max(ads4$age.at.followup)) {
-  f.u.rate4[i] <- FollowupRate(ads4[ads4$age.at.followup == i, ])
-  denominator4[i] <- sum(ads4[ads4$age.at.followup == i, ]$death.before.2y == F)
+  rate.age.followup[i] <- FollowupRate(ads4[ads4$age.at.followup == i, ])
+  denominator.age.followup[i] <- sum(ads4[ads4$age.at.followup == i, ]$death.before.2y == F)
 }
-barplot(f.u.rate4, ylim=c(0:1), names.arg=c(1:max(ads4$age.at.followup)), family="sans",
+for (i in 1:max(ads4$age.at.followup)) {
+  rate.age.followup.all02[i] <- FollowupRate(ads4[ads4$age.at.followup == i & ads4$STUDYID == "ALL02", ])
+  denominator.age.followup.all02[i] <- sum(ads4[ads4$age.at.followup == i & ads4$STUDYID == "ALL02", ]$death.before.2y == F)
+}
+for (i in 1:max(ads4$age.at.followup)) {
+  rate.age.followup.aml05[i] <- FollowupRate(ads4[ads4$age.at.followup == i & ads4$STUDYID == "AML05", ])
+  denominator.age.followup.aml05[i] <- sum(ads4[ads4$age.at.followup == i & ads4$STUDYID == "AML05", ]$death.before.2y == F)
+}
+barplot(rate.age.followup, ylim=c(0:1), names.arg=c(1:max(ads4$age.at.followup)), family="sans",
         main="Follow-up rate by age at follow-up", xlab="Age at follow-up", ylab="Follow up rate")
+barplot(rate.age.followup.all02, ylim=c(0:1), names.arg=c(1:max(ads4$age.at.followup)), family="sans",
+        main="Follow-up rate by age at follow-up, ALL02", xlab="Age at follow-up", ylab="Follow up rate")
+barplot(rate.age.followup.aml05, ylim=c(0:1), names.arg=c(1:max(ads4$age.at.followup)), family="sans",
+        main="Follow-up rate by age at follow-up, AML05", xlab="Age at follow-up", ylab="Follow up rate")
 
 setwd("../output")
 write.csv(ads, "LTFU dataset.csv", row.names=T)
