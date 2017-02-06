@@ -111,6 +111,10 @@ ads$age.at.datafix <- YearDif(ads$BRTHDTC, ads$fix.date)  # データ固定時�
 ads$age.at.followup <- YearDif(ads$BRTHDTC, ads$DSSTDTC)  # 最終転帰更新日時点の年齢
 missing.value <- ads[ads$DSSTDTC == "" | ads$BRTHDTC == "", ]  # 最終転帰更新日または生年月日が無い症例
 
+denom.all02 <- xtabs(no.death.before.2y ~ y.from.end.trt + age.at.datafix, data = ads[ads$STUDYID == "ALL02", ])
+numer.all02 <- xtabs(followup.in.2y ~ y.from.end.trt + age.at.datafix, data = ads[ads$STUDYID == "ALL02", ])
+numer.all02 / denom.all02
+
 # 横軸に治療後年数、縦軸にフォローアップ率のグラフを記述する
 ads1 <- ads[!is.na(ads$y.from.end.trt), ]
 rate.end.trt <- NULL
