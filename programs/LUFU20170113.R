@@ -113,7 +113,15 @@ missing.value <- ads[ads$DSSTDTC == "" | ads$BRTHDTC == "", ]  # 最終転帰更
 
 denom.all02 <- xtabs(no.death.before.2y ~ y.from.end.trt + age.at.datafix, data = ads[ads$STUDYID == "ALL02", ])
 numer.all02 <- xtabs(followup.in.2y ~ y.from.end.trt + age.at.datafix, data = ads[ads$STUDYID == "ALL02", ])
-numer.all02 / denom.all02
+rates.all02 <- round(addmargins(numer.all02) / addmargins(denom.all02), 2)*100
+x.lab <- dimnames(rates.all02)[["y.from.end.trt"]]
+rates.all02["Sum", -length(rates.all02["Sum",])]
+barplot(rates.all02['Sum',], family="sans",
+        main="Follow-up rate by years after end of treatment, ALL02",
+        xlab="Years after end of treatment", ylab="Follow up rate")
+barplot(rates.all02[, 'Sum'], family="sans",
+        main="Follow-up rate by age at data fix, ALL02",
+        xlab="Age at data fix", ylab="Follow up rate")
 
 # 横軸に治療後年数、縦軸にフォローアップ率のグラフを記述する
 ads1 <- ads[!is.na(ads$y.from.end.trt), ]
