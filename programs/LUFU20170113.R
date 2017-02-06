@@ -16,7 +16,7 @@ YearDif <- function(starting, ending) {
 
 FollowupRate <- function(dataframe) {
 # フォローアップ率を作る関数
-    sum(dataframe$followup.in.2y == T) / sum(dataframe$death.before.2y == F)
+    sum(dataframe$followup.in.2y == T) / sum(dataframe$no.death.before.2y == T)
 }
 
 kFixDateAml05 <- "2016/10/05"
@@ -104,8 +104,8 @@ for (i in 1:length(ads$SUBJID)) {
 }
 ads$followup.in.2y <- ifelse((is.na(as.numeric(ads$y.from.last.update)) | as.numeric(ads$y.from.last.update) > 2),
                              F, T)  # 2年以内の転帰確認
-ads$death.before.2y <- ifelse((is.na(as.numeric(ads$y.from.death)) | as.numeric(ads$y.from.death) <= 2),
-                              F, T)  # 2年時点の死亡確認
+ads$no.death.before.2y <- ifelse((is.na(as.numeric(ads$y.from.death)) | as.numeric(ads$y.from.death) <= 2),
+                                 T, F)  # 2年時点の死亡確認
 ads$y.from.end.trt <- YearDif(ads$date.end.trt, ads$fix.date)  # 治療終了後年数
 ads$age.at.datafix <- YearDif(ads$BRTHDTC, ads$fix.date)  # データ固定時の年齢
 ads$age.at.followup <- YearDif(ads$BRTHDTC, ads$DSSTDTC)  # 最終転帰更新日時点の年齢
@@ -116,20 +116,20 @@ ads1 <- ads[!is.na(ads$y.from.end.trt), ]
 rate.end.trt <- NULL
 rate.end.trt.all02 <- NULL
 rate.end.trt.aml05 <- NULL
-denominator.end.trt <- NULL
-denominator.end.trt.all02 <- NULL
-denominator.end.trt.aml05 <- NULL
+denom.end.trt <- NULL
+denom.end.trt.all02 <- NULL
+denom.end.trt.aml05 <- NULL
 for (i in 1:max(ads1$y.from.end.trt)) {
   rate.end.trt[i] <- FollowupRate(ads1[ads1$y.from.end.trt == i, ])
-  denominator.end.trt[i] <- sum(ads1[ads1$y.from.end.trt == i, ]$death.before.2y == F)
+  denom.end.trt[i] <- sum(ads1[ads1$y.from.end.trt == i, ]$no.death.before.2y == T)
 }
 for (i in 1:max(ads1$y.from.end.trt)) {
   rate.end.trt.all02[i] <- FollowupRate(ads1[ads1$y.from.end.trt == i & ads1$STUDYID == "ALL02", ])
-  denominator.end.trt.all02[i] <- sum(ads1[ads1$y.from.end.trt == i & ads1$STUDYID == "ALL02", ]$death.before.2y == F)
+  denom.end.trt.all02[i] <- sum(ads1[ads1$y.from.end.trt == i & ads1$STUDYID == "ALL02", ]$no.death.before.2y == T)
 }
 for (i in 1:max(ads1$y.from.end.trt)) {
   rate.end.trt.aml05[i] <- FollowupRate(ads1[ads1$y.from.end.trt == i & ads1$STUDYID == "AML05", ])
-  denominator.end.trt.aml05[i] <- sum(ads1[ads1$y.from.end.trt == i & ads1$STUDYID == "AML05", ]$death.before.2y == F)
+  denom.end.trt.aml05[i] <- sum(ads1[ads1$y.from.end.trt == i & ads1$STUDYID == "AML05", ]$no.death.before.2y == T)
 }
 barplot(rate.end.trt, ylim=c(0:1), names.arg=c(1:max(ads1$y.from.end.trt)), family="sans",
         main="Follow-up rate by years after end of treatment",
@@ -146,20 +146,20 @@ ads2 <- ads[!is.na(ads$age.at.datafix), ]
 rate.age.datafix <- NULL
 rate.age.datafix.all02 <- NULL
 rate.age.datafix.aml05 <- NULL
-denominator.age.datafix <- NULL
-denominator.age.datafix.all02 <- NULL
-denominator.age.datafix.aml05 <- NULL
+denom.age.datafix <- NULL
+denom.age.datafix.all02 <- NULL
+denom.age.datafix.aml05 <- NULL
 for (i in 1:max(ads2$age.at.datafix)) {
   rate.age.datafix[i] <- FollowupRate(ads2[ads2$age.at.datafix == i, ])
-  denominator.age.datafix[i] <- sum(ads2[ads2$age.at.datafix == i, ]$death.before.2y == F)
+  denom.age.datafix[i] <- sum(ads2[ads2$age.at.datafix == i, ]$no.death.before.2y == T)
 }
 for (i in 1:max(ads2$age.at.datafix)) {
   rate.age.datafix.all02[i] <- FollowupRate(ads2[ads2$age.at.datafix == i & ads2$STUDYID == "ALL02", ])
-  denominator.age.datafix.all02[i] <- sum(ads2[ads2$age.at.datafix == i & ads2$STUDYID == "ALL02", ]$death.before.2y == F)
+  denom.age.datafix.all02[i] <- sum(ads2[ads2$age.at.datafix == i & ads2$STUDYID == "ALL02", ]$no.death.before.2y == T)
 }
 for (i in 1:max(ads2$age.at.datafix)) {
   rate.age.datafix.aml05[i] <- FollowupRate(ads2[ads2$age.at.datafix == i & ads2$STUDYID == "AML05", ])
-  denominator.age.datafix.aml05[i] <- sum(ads2[ads2$age.at.datafix == i & ads2$STUDYID == "AML05", ]$death.before.2y == F)
+  denom.age.datafix.aml05[i] <- sum(ads2[ads2$age.at.datafix == i & ads2$STUDYID == "AML05", ]$no.death.before.2y == T)
 }
 barplot(rate.age.datafix, ylim=c(0:1), names.arg=c(1:max(ads2$age.at.datafix)), family="sans",
         main="Follow-up rate by age at data fix", xlab="Age at data fix", ylab="Follow up rate")
@@ -170,10 +170,10 @@ barplot(rate.age.datafix.aml05, ylim=c(0:1), names.arg=c(1:max(ads2$age.at.dataf
 
 #県別のdataframeでフォローアップ率を出す
 f.u.rate3 <- NULL
-denominator3 <- NULL
+denom3 <- NULL
 for (i in 1:47) {
   f.u.rate3[i] <- FollowupRate(ads[ads$SCSTRESC == i, ])
-  denominator3[i] <- sum(ads[ads$SCSTRESC == i, ]$death.before.2y == F)
+  denom3[i] <- sum(ads[ads$SCSTRESC == i, ]$no.death.before.2y == T)
 }
 barplot(f.u.rate3, names.arg=prefecture$Prefecture, family="sans", las=3, ylim=c(0:1),
         main="Follow-up rate by prefecture", xlab="", ylab="Follow up rate", cex.names=0.7)
@@ -183,20 +183,20 @@ ads4 <- ads[!is.na(ads$age.at.followup), ]
 rate.age.followup <- NULL
 rate.age.followup.all02 <- NULL
 rate.age.followup.aml05 <- NULL
-denominator.age.followup <- NULL
-denominator.age.followup.all02 <- NULL
-denominator.age.followup.aml05 <- NULL
+denom.age.followup <- NULL
+denom.age.followup.all02 <- NULL
+denom.age.followup.aml05 <- NULL
 for (i in 1:max(ads4$age.at.followup)) {
   rate.age.followup[i] <- FollowupRate(ads4[ads4$age.at.followup == i, ])
-  denominator.age.followup[i] <- sum(ads4[ads4$age.at.followup == i, ]$death.before.2y == F)
+  denom.age.followup[i] <- sum(ads4[ads4$age.at.followup == i, ]$no.death.before.2y == T)
 }
 for (i in 1:max(ads4$age.at.followup)) {
   rate.age.followup.all02[i] <- FollowupRate(ads4[ads4$age.at.followup == i & ads4$STUDYID == "ALL02", ])
-  denominator.age.followup.all02[i] <- sum(ads4[ads4$age.at.followup == i & ads4$STUDYID == "ALL02", ]$death.before.2y == F)
+  denom.age.followup.all02[i] <- sum(ads4[ads4$age.at.followup == i & ads4$STUDYID == "ALL02", ]$no.death.before.2y == T)
 }
 for (i in 1:max(ads4$age.at.followup)) {
   rate.age.followup.aml05[i] <- FollowupRate(ads4[ads4$age.at.followup == i & ads4$STUDYID == "AML05", ])
-  denominator.age.followup.aml05[i] <- sum(ads4[ads4$age.at.followup == i & ads4$STUDYID == "AML05", ]$death.before.2y == F)
+  denom.age.followup.aml05[i] <- sum(ads4[ads4$age.at.followup == i & ads4$STUDYID == "AML05", ]$no.death.before.2y == T)
 }
 barplot(rate.age.followup, ylim=c(0:1), names.arg=c(1:max(ads4$age.at.followup)), family="sans",
         main="Follow-up rate by age at follow-up", xlab="Age at follow-up", ylab="Follow up rate")
