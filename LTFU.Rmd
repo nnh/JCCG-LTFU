@@ -3,9 +3,9 @@ title: "JCCG-LTFU"
 author: "Mamiko Yonejima"
 date: "2017/1/28"
 output:
-  word_document: default
-  pdf_document: default
   html_document: default
+  pdf_document: default
+  word_document: default
 ---
 
 ```{r setup, include=FALSE}
@@ -14,7 +14,7 @@ source("./programs/LUFU20170113.R", encoding = "UTF-8")
 ```
 
 ### 横軸に治療後年数、縦軸にフォローアップ率のグラフを記述
-```{r Years after end of treatment, echo=FALSE, dpi=200}
+```{r Years after end of treatment, echo=FALSE, dpi=200, out.width=500}
 barplot(rate.end.trt, ylim=c(0:1), names.arg=c(1:max(ads1$y.from.end.trt)), family="sans",
         main="Follow-up rate by years after end of treatment",
         xlab="Years after end of treatment", ylab="Follow up rate")

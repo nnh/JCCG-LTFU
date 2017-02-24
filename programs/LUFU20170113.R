@@ -110,6 +110,16 @@ ads$y.from.end.trt <- YearDif(ads$date.end.trt, ads$fix.date)  # 治療終了後
 ads$age.at.datafix <- YearDif(ads$BRTHDTC, ads$fix.date)  # データ固定時の年齢
 ads$age.at.followup <- YearDif(ads$BRTHDTC, ads$DSSTDTC)  # 最終転帰更新日時点の年齢
 missing.value <- ads[ads$DSSTDTC == "" | ads$BRTHDTC == "", ]  # 最終転帰更新日または生年月日が無い症例
+# ads(analysis data set, 解析用データセット 作成完了)
+
+ads$cat.age.at.datafix <- cut(ads$age.at.datafix, breaks = c(9,13,17,21,25,30),
+                              labels= c("9-12","13-16","17-20","21-24","25-29"), right=FALSE)
+ads$cat.y.from.end.trt<- cut(ads$y.from.end.trt, breaks = c(5,7,9,11,14),
+                             labels= c("5-6","7-8","9-10","11-13"), right=FALSE)
+denom.all02.cat <- xtabs(no.death.before.2y ~ cat.y.from.end.trt + cat.age.at.datafix, data = ads[ads$STUDYID == "ALL02", ])
+numer.all02.cat <- xtabs(followup.in.2y ~ cat.y.from.end.trt + cat.age.at.datafix, data = ads[ads$STUDYID == "ALL02", ])
+rates.all02.cat <- round(addmargins(numer.all02.cat) / addmargins(denom.all02.cat), 2)*100
+
 
 denom.all02 <- xtabs(no.death.before.2y ~ y.from.end.trt + age.at.datafix, data = ads[ads$STUDYID == "ALL02", ])
 numer.all02 <- xtabs(followup.in.2y ~ y.from.end.trt + age.at.datafix, data = ads[ads$STUDYID == "ALL02", ])
@@ -117,10 +127,10 @@ rates.all02 <- round(addmargins(numer.all02) / addmargins(denom.all02), 2)*100
 x.lab <- dimnames(rates.all02)[["y.from.end.trt"]]
 rates.all02["Sum", -length(rates.all02["Sum",])]
 barplot(rates.all02['Sum',], family="sans",
-        main="Follow-up rate by years after end of treatment, ALL02",
+        main="Follow-up rate by years after end of treatment, ALL02, NEW",
         xlab="Years after end of treatment", ylab="Follow up rate")
 barplot(rates.all02[, 'Sum'], family="sans",
-        main="Follow-up rate by age at data fix, ALL02",
+        main="Follow-up rate by age at data fix, ALL02, NEW",
         xlab="Age at data fix", ylab="Follow up rate")
 
 # 横軸に治療後年数、縦軸にフォローアップ率のグラフを記述する
