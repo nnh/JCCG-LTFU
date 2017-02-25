@@ -40,13 +40,11 @@ ads.all02 <- merge.JACLS[c("JACLS登録コード", "診断年月日", "治療終
 names(ads.all02)[c(1:7)] <- c("SUBJID", "MHSTDTC", "date.end.trt", "BRTHDTC", "DTHFL", "DTHDTC", "DSSTDTC")
 ads.all02$DTHFL[ads.all02$DTHFL == "true"] <- T
 ads.all02$DTHFL[ads.all02$DTHFL == "false"] <- F
-
 ads.all02$STUDYID <- "ALL02"
 ads.all02$fix.date <- kFixDateAll02
 
 # Make ADS(Analysis Data Set) for JPLSG-AML-05
 aml05.pick <- subset(AML05, is.na(AML05$解析対象外))
-# aml05.pick[is.na(aml05.pick)] <- "-"  # TODO(tosh):なぜ必要？
 aml05.pick$中止届有無[is.na(aml05.pick$中止届有無)] <- 0
 for (i in 1:length(aml05.pick$J_CD)) {
   if (aml05.pick$中止届有無[i] == 1) {
@@ -89,6 +87,7 @@ ads$DTHFL <- as.logical(ads$DTHFL)
 missing.value <- ads[is.na(ads$DSSTDTC) | is.na(ads$BRTHDTC), ]  # 最終転帰更新日または生年月日が無い症例
 ads <- ads[!is.na(ads$DSSTDTC) & !is.na(ads$BRTHDTC), ]
 
+# Save ADS(analysis data set)
 setwd("./output")
 write.csv(ads, "LTFU dataset.csv", row.names=T)
 write.csv(missing.value, "LTFU missing value.csv", row.names=T)
