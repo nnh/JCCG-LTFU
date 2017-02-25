@@ -1,7 +1,6 @@
 ---
 title: "JCCG-LTFU"
 author: "Mamiko Yonejima"
-date: "2017/1/28"
 output:
   word_document: default
   pdf_document: default
@@ -10,11 +9,54 @@ output:
 
 ```{r setup, include=FALSE}
 knitr::opts_chunk$set(echo = TRUE)
-source("./programs/LUFU20170113.R", encoding = "UTF-8")
+source("./programs/make_ads.R", encoding = "UTF-8")
+ads$base.date <- ads$fix.date
+source("./programs/followup_rate.R", encoding = "UTF-8")
 ```
 
+実行日時：`r Sys.time()`
+
+## フォローアップ率算出基準日をデータ固定日にした場合
+
+### ALL02分母生データ
+```{r}
+denom.all02
+```
+### ALL02分子生データ
+```{r}
+numer.all02
+```
+### ALL02分母
+```{r}
+denom.all02.cat
+```
+### ALL02分子
+```{r}
+numer.all02.cat
+```
+### ALL02フォローアップ率
+```{r}
+rates.all02.cat
+```
+
+### AML05分子生データ
+```{r}
+numer.aml05
+```
+### AML05分母
+```{r}
+denom.aml05.cat
+```
+### AML05分子
+```{r}
+numer.aml05.cat
+```
+### AML05フォローアップ率
+```{r}
+rates.aml05.cat
+```
 ### 横軸に治療後年数、縦軸にフォローアップ率のグラフを記述
-```{r Years after end of treatment, echo=FALSE, dpi=200}
+```{r Years after end of treatment, echo=FALSE, dpi=200, out.width=500}
 barplot(rate.end.trt, ylim=c(0:1), names.arg=c(1:max(ads1$y.from.end.trt)), family="sans",
         main="Follow-up rate by years after end of treatment",
         xlab="Years after end of treatment", ylab="Follow up rate")
@@ -44,11 +86,94 @@ barplot(f.u.rate3, names.arg=prefecture$Prefecture, family="sans", las=3, ylim=c
 
 ### 横軸に最終転帰更新時年齢、縦軸にフォローアップ率のグラフを記述
 ```{r Follow-up rate by age at follow-up, echo=FALSE, fig.width=7, dpi=200, out.width=500}
-barplot(rate.age.followup, ylim=c(0:1), names.arg=c(1:max(ads4$age.at.followup)), family="sans",
+barplot(rate.age.followup, ylim=c(0:1), names.arg=c(1:x.max), family="sans",
         main="Follow-up rate by age at follow-up", xlab="Age at follow-up", ylab="Follow up rate")
-barplot(rate.age.followup.all02, ylim=c(0:1), names.arg=c(1:max(ads4$age.at.followup)), family="sans",
+barplot(rate.age.followup.all02, ylim=c(0:1), names.arg=c(1:x.max), family="sans",
         main="Follow-up rate by age at follow-up, ALL02", xlab="Age at follow-up", ylab="Follow up rate")
-barplot(rate.age.followup.aml05, ylim=c(0:1), names.arg=c(1:max(ads4$age.at.followup)), family="sans",
+barplot(rate.age.followup.aml05, ylim=c(0:1), names.arg=c(1:x.max), family="sans",
+        main="Follow-up rate by age at follow-up, AML05", xlab="Age at follow-up", ylab="Follow up rate")
+```
+
+---
+## フォローアップ率算出基準日をデータ固定日の2年前にした場合
+```{r, echo=FALSE}
+ads[ads$STUDYID == "AML05", ]$base.date <- "2014/10/05"
+ads[ads$STUDYID == "ALL02", ]$base.date <- "2014/05/12"
+source("./programs/followup_rate.R", encoding = "UTF-8")
+```
+### ALL02分母生データ
+```{r}
+denom.all02
+```
+### ALL02分子生データ
+```{r}
+numer.all02
+```
+### ALL02分母
+```{r}
+denom.all02.cat
+```
+### ALL02分子
+```{r}
+numer.all02.cat
+```
+### ALL02フォローアップ率
+```{r}
+rates.all02.cat
+```
+
+### AML05分子生データ
+```{r}
+numer.aml05
+```
+### AML05分母
+```{r}
+denom.aml05.cat
+```
+### AML05分子
+```{r}
+numer.aml05.cat
+```
+### AML05フォローアップ率
+```{r}
+rates.aml05.cat
+```
+### 横軸に治療後年数、縦軸にフォローアップ率のグラフを記述
+```{r, echo=FALSE, dpi=200, out.width=500}
+barplot(rate.end.trt, ylim=c(0:1), names.arg=c(1:max(ads1$y.from.end.trt)), family="sans",
+        main="Follow-up rate by years after end of treatment",
+        xlab="Years after end of treatment", ylab="Follow up rate")
+barplot(rate.end.trt.all02, ylim=c(0:1), names.arg=c(1:max(ads1$y.from.end.trt)), family="sans",
+        main="Follow-up rate by years after end of treatment, ALL02",
+        xlab="Years after end of treatment", ylab="Follow up rate")
+barplot(rate.end.trt.aml05, ylim=c(0:1), names.arg=c(1:max(ads1$y.from.end.trt)), family="sans",
+        main="Follow-up rate by years after end of treatment, AML05",
+        xlab="Years after end of treatment", ylab="Follow up rate")
+```
+
+### 横軸にデータ固定時年齢、縦軸にフォローアップ率のグラフを記述
+```{r, echo=FALSE, dpi=200, out.width=500}
+barplot(rate.age.datafix, ylim=c(0:1), names.arg=c(1:max(ads2$age.at.datafix)), family="sans",
+        main="Follow up rate by age at data fix", xlab="Age at data fix", ylab="Follow up rate")
+barplot(rate.age.datafix.all02, ylim=c(0:1), names.arg=c(1:max(ads2$age.at.datafix)), family="sans",
+        main="Follow up rate by age at data fix, ALL02", xlab="Age at data fix", ylab="Follow up rate")
+barplot(rate.age.datafix.aml05, ylim=c(0:1), names.arg=c(1:max(ads2$age.at.datafix)), family="sans",
+        main="Follow up rate by age at data fix, AML05", xlab="Age at data fix", ylab="Follow up rate")
+```
+
+### 横軸に県、縦軸にフォローアップ率のグラフを記述
+```{r, echo=FALSE, fig.width=7, dpi=200, out.width=500}
+barplot(f.u.rate3, names.arg=prefecture$Prefecture, family="sans", las=3, ylim=c(0:1),
+        main="Follow-up rate by prefecture", xlab="", ylab="Follow up rate", cex.names=0.7)
+```
+
+### 横軸に最終転帰更新時年齢、縦軸にフォローアップ率のグラフを記述
+```{r, echo=FALSE, fig.width=7, dpi=200, out.width=500}
+barplot(rate.age.followup, ylim=c(0:1), names.arg=c(1:x.max), family="sans",
+        main="Follow-up rate by age at follow-up", xlab="Age at follow-up", ylab="Follow up rate")
+barplot(rate.age.followup.all02, ylim=c(0:1), names.arg=c(1:x.max), family="sans",
+        main="Follow-up rate by age at follow-up, ALL02", xlab="Age at follow-up", ylab="Follow up rate")
+barplot(rate.age.followup.aml05, ylim=c(0:1), names.arg=c(1:x.max), family="sans",
         main="Follow-up rate by age at follow-up, AML05", xlab="Age at follow-up", ylab="Follow up rate")
 ```
 
