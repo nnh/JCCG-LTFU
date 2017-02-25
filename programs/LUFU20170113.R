@@ -112,20 +112,30 @@ ads$age.at.followup <- YearDif(ads$BRTHDTC, ads$DSSTDTC)  # 最終転帰更新�
 missing.value <- ads[ads$DSSTDTC == "" | ads$BRTHDTC == "", ]  # 最終転帰更新日または生年月日が無い症例
 # ads(analysis data set, 解析用データセット 作成完了)
 
-ads$cat.age.at.datafix <- cut(ads$age.at.datafix, breaks = c(9,13,17,21,25,30),
-                              labels= c("9-12","13-16","17-20","21-24","25-29"), right=FALSE)
-ads$cat.y.from.end.trt<- cut(ads$y.from.end.trt, breaks = c(5,7,9,11,14),
-                             labels= c("5-6","7-8","9-10","11-13"), right=FALSE)
+ads$cat2.age.at.datafix <- cut(ads$age.at.datafix, breaks = c(6,10,14,18,22,27),
+                              labels= c("6-9","10-13","14-17","18-21","22-26"), right=FALSE)
+ads$cat2.y.from.end.trt<- cut(ads$y.from.end.trt, breaks = c(4,6,8,10),
+                             labels= c("4-5","6-7","8-9"), right=FALSE)
+denom.aml05.cat <- xtabs(no.death.before.2y ~ cat2.y.from.end.trt + cat2.age.at.datafix, data = ads[ads$STUDYID == "AML05", ])
+numer.aml05.cat <- xtabs(followup.in.2y ~ cat2.y.from.end.trt + cat2.age.at.datafix, data = ads[ads$STUDYID == "AML05", ])
+rates.aml05.cat <- round(addmargins(numer.aml05.cat) / addmargins(denom.aml05.cat), 2)*100
+denom.aml05 <- xtabs(no.death.before.2y ~ y.from.end.trt + age.at.datafix, data = ads[ads$STUDYID == "AML05", ])
+numer.aml05 <- xtabs(followup.in.2y ~ y.from.end.trt + age.at.datafix, data = ads[ads$STUDYID == "AML05", ])
+rates.aml05 <- round(numer.aml05 / denom.aml05, 2)*100
+# rates.aml05 <- round(addmargins(numer.aml05) / addmargins(denom.aml05), 2)*100
+
+ads$cat.age.at.datafix <- cut(ads$age.at.datafix, breaks = c(6,9,13,17,21,25,30),
+                              labels= c("6-8","9-12","13-16","17-20","21-24","25-29"), right=FALSE)
+ads$cat.y.from.end.trt<- cut(ads$y.from.end.trt, breaks = c(4,7,9,11,14),
+                             labels= c("4-6","7-8","9-10","11-13"), right=FALSE)
 denom.all02.cat <- xtabs(no.death.before.2y ~ cat.y.from.end.trt + cat.age.at.datafix, data = ads[ads$STUDYID == "ALL02", ])
 numer.all02.cat <- xtabs(followup.in.2y ~ cat.y.from.end.trt + cat.age.at.datafix, data = ads[ads$STUDYID == "ALL02", ])
 rates.all02.cat <- round(addmargins(numer.all02.cat) / addmargins(denom.all02.cat), 2)*100
-
-
 denom.all02 <- xtabs(no.death.before.2y ~ y.from.end.trt + age.at.datafix, data = ads[ads$STUDYID == "ALL02", ])
 numer.all02 <- xtabs(followup.in.2y ~ y.from.end.trt + age.at.datafix, data = ads[ads$STUDYID == "ALL02", ])
-rates.all02 <- round(addmargins(numer.all02) / addmargins(denom.all02), 2)*100
-x.lab <- dimnames(rates.all02)[["y.from.end.trt"]]
-rates.all02["Sum", -length(rates.all02["Sum",])]
+rates.all02 <- round(numer.all02 / denom.all02, 2)*100
+# x.lab <- dimnames(rates.all02)[["y.from.end.trt"]]
+# rates.all02["Sum", -length(rates.all02["Sum",])]
 barplot(rates.all02['Sum',], family="sans",
         main="Follow-up rate by years after end of treatment, ALL02, NEW",
         xlab="Years after end of treatment", ylab="Follow up rate")
