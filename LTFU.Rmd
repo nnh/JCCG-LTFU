@@ -1,10 +1,12 @@
 ---
 title: "JCCG-LTFU"
-author: "Mamiko Yonejima"
+author: "Mamiko Yonejima, Toshiki Saito"
 output:
   word_document: default
-  pdf_document: default
+  pdf_document:
+    latex_engine: xelatex
   html_document: default
+mainfont: Hiragino Kaku Gothic Pro
 ---
 
 ```{r setup, include=FALSE}
@@ -56,7 +58,7 @@ numer.aml05.cat
 rates.aml05.cat
 ```
 ### 横軸に治療後年数、縦軸にフォローアップ率のグラフを記述
-```{r Years after end of treatment, echo=FALSE, dpi=200, out.width=500}
+```{r Years after end of treatment, echo=FALSE, dpi=200}
 barplot(rate.end.trt, ylim=c(0:1), names.arg=c(1:max(ads1$y.from.end.trt)), family="sans",
         main="Follow-up rate by years after end of treatment",
         xlab="Years after end of treatment", ylab="Follow up rate")
@@ -69,7 +71,7 @@ barplot(rate.end.trt.aml05, ylim=c(0:1), names.arg=c(1:max(ads1$y.from.end.trt))
 ```
 
 ### 横軸にデータ固定時年齢、縦軸にフォローアップ率のグラフを記述
-```{r Follow up rate by age, echo=FALSE, dpi=200, out.width=500}
+```{r Follow up rate by age, echo=FALSE, dpi=200}
 barplot(rate.age.datafix, ylim=c(0:1), names.arg=c(1:max(ads2$age.at.datafix)), family="sans",
         main="Follow up rate by age at data fix", xlab="Age at data fix", ylab="Follow up rate")
 barplot(rate.age.datafix.all02, ylim=c(0:1), names.arg=c(1:max(ads2$age.at.datafix)), family="sans",
@@ -79,13 +81,13 @@ barplot(rate.age.datafix.aml05, ylim=c(0:1), names.arg=c(1:max(ads2$age.at.dataf
 ```
 
 ### 横軸に県、縦軸にフォローアップ率のグラフを記述
-```{r Follow-up rate by prefecture, echo=FALSE, fig.width=7, dpi=200, out.width=500}
+```{r Follow-up rate by prefecture, echo=FALSE, dpi=200}
 barplot(f.u.rate3, names.arg=prefecture$Prefecture, family="sans", las=3, ylim=c(0:1),
         main="Follow-up rate by prefecture", xlab="", ylab="Follow up rate", cex.names=0.7)
 ```
 
 ### 横軸に最終転帰更新時年齢、縦軸にフォローアップ率のグラフを記述
-```{r Follow-up rate by age at follow-up, echo=FALSE, fig.width=7, dpi=200, out.width=500}
+```{r Follow-up rate by age at follow-up, echo=FALSE, dpi=200}
 barplot(rate.age.followup, ylim=c(0:1), names.arg=c(1:x.max), family="sans",
         main="Follow-up rate by age at follow-up", xlab="Age at follow-up", ylab="Follow up rate")
 barplot(rate.age.followup.all02, ylim=c(0:1), names.arg=c(1:x.max), family="sans",
@@ -139,7 +141,7 @@ numer.aml05.cat
 rates.aml05.cat
 ```
 ### 横軸に治療後年数、縦軸にフォローアップ率のグラフを記述
-```{r, echo=FALSE, dpi=200, out.width=500}
+```{r, echo=FALSE, dpi=200}
 barplot(rate.end.trt, ylim=c(0:1), names.arg=c(1:max(ads1$y.from.end.trt)), family="sans",
         main="Follow-up rate by years after end of treatment",
         xlab="Years after end of treatment", ylab="Follow up rate")
@@ -152,7 +154,7 @@ barplot(rate.end.trt.aml05, ylim=c(0:1), names.arg=c(1:max(ads1$y.from.end.trt))
 ```
 
 ### 横軸にデータ固定時年齢、縦軸にフォローアップ率のグラフを記述
-```{r, echo=FALSE, dpi=200, out.width=500}
+```{r, echo=FALSE, dpi=200}
 barplot(rate.age.datafix, ylim=c(0:1), names.arg=c(1:max(ads2$age.at.datafix)), family="sans",
         main="Follow up rate by age at data fix", xlab="Age at data fix", ylab="Follow up rate")
 barplot(rate.age.datafix.all02, ylim=c(0:1), names.arg=c(1:max(ads2$age.at.datafix)), family="sans",
@@ -162,13 +164,13 @@ barplot(rate.age.datafix.aml05, ylim=c(0:1), names.arg=c(1:max(ads2$age.at.dataf
 ```
 
 ### 横軸に県、縦軸にフォローアップ率のグラフを記述
-```{r, echo=FALSE, fig.width=7, dpi=200, out.width=500}
+```{r, echo=FALSE, dpi=200}
 barplot(f.u.rate3, names.arg=prefecture$Prefecture, family="sans", las=3, ylim=c(0:1),
         main="Follow-up rate by prefecture", xlab="", ylab="Follow up rate", cex.names=0.7)
 ```
 
 ### 横軸に最終転帰更新時年齢、縦軸にフォローアップ率のグラフを記述
-```{r, echo=FALSE, fig.width=7, dpi=200, out.width=500}
+```{r, echo=FALSE, dpi=200}
 barplot(rate.age.followup, ylim=c(0:1), names.arg=c(1:x.max), family="sans",
         main="Follow-up rate by age at follow-up", xlab="Age at follow-up", ylab="Follow up rate")
 barplot(rate.age.followup.all02, ylim=c(0:1), names.arg=c(1:x.max), family="sans",

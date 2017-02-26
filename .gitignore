@@ -4,6 +4,7 @@
 /rawdata/
 *.html
 *.docx
+*.pdf
 ### Windows ###
 # Windows image file caches
 Thumbs.db
