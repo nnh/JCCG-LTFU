@@ -30,13 +30,13 @@ for (i in 1:length(filenames)) {
 setwd("..")
 
 # Make ADS(Analysis Data Set) for JACLS-ALL-02
-jacls.registration <- regis[c("現施設名", "登録コード", "生年月日")]
+jacls.registration <- regis[c("現施設名", "登録コード", "生年月日", "最終確認日")]
 all02.pick0 <- ALL02[c("JACLS登録コード", "診断年月日", "治療終了日")]
 all02.pick <- merge(all02.pick0, jacls.registration, by.x="JACLS登録コード", by.y="登録コード", all.x=T)
 merge.02.facil <- merge(all02.pick, facil, by.x="現施設名", by.y="施設名", all.x=T)
 merge.JACLS <- merge(merge.02.facil, JACLS, by.x="JACLS登録コード", by.y="登録コード", all.x=T)
 merge.JACLS$SCSTRESC <- floor(as.numeric(merge.JACLS$施設CD) / 10000000)  # 施設コードの上2桁が県コード
-ads.all02 <- merge.JACLS[c("JACLS登録コード", "診断年月日", "治療終了日", "生年月日.x", "生死", "死亡日", "最終確認日", "SCSTRESC")]
+ads.all02 <- merge.JACLS[c("JACLS登録コード", "診断年月日", "治療終了日", "生年月日.x", "生死", "死亡日", "最終確認日.x", "SCSTRESC")]
 names(ads.all02)[c(1:7)] <- c("SUBJID", "MHSTDTC", "date.end.trt", "BRTHDTC", "DTHFL", "DTHDTC", "DSSTDTC")
 ads.all02$DTHFL[ads.all02$DTHFL == "true"] <- T
 ads.all02$DTHFL[ads.all02$DTHFL == "false"] <- F
