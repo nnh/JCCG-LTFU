@@ -5,7 +5,9 @@
 
 YearDif <- function(starting, ending) {
   # 満xx年を作る関数
-  if (starting != "" && ending != "") {
+  if (is.na(starting) || is.na(ending)) {
+    return(NA)
+  } else if (starting != "" && ending != "") {
     period <- as.integer((as.integer(format(as.Date(ending), "%Y%m%d"))
                           - as.integer(format(as.Date(starting), "%Y%m%d"))) / 10000)
   } else {
