@@ -22,6 +22,8 @@ kFixDateAll02 <- "2016/05/12"
 # Read external data
 setwd("./input")
 prefecture <- read.csv('Prefecture.csv', as.is=T, fileEncoding='UTF-8-BOM')
+sites.all02 <- read.csv('LTFU Institution - ALL02.csv', as.is=T, fileEncoding='UTF-8-BOM')
+sites.aml05 <- read.csv('LTFU Institution - AML05.csv', as.is=T, fileEncoding='UTF-8-BOM')
 
 # Read CSV rawdata, ファイル名の最初の5文字をdataframe名にして読み込む
 setwd("../rawdata")
