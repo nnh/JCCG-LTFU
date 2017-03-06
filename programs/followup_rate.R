@@ -20,8 +20,8 @@ numer.aml05 <- xtabs(followup.in.2y ~ y.from.end.trt + age.at.datafix, data = ad
 rates.aml05 <- round(addmargins(numer.aml05) / addmargins(denom.aml05), 2)*100
 ads$cat2.age.at.datafix <- cut(ads$age.at.datafix, breaks = c(6,10,14,18,22,27),
                               labels= c("6-9","10-13","14-17","18-21","22-26"), right=FALSE)
-ads$cat2.y.from.end.trt<- cut(ads$y.from.end.trt, breaks = c(4,6,8,10),
-                             labels= c("4-5","6-7","8-9"), right=FALSE)
+ads$cat2.y.from.end.trt<- cut(ads$y.from.end.trt, breaks = c(2,4,6,8,10),
+                             labels= c("2-3","4-5","6-7","8-9"), right=FALSE)
 denom.aml05.cat <- xtabs(no.death.before.2y ~ cat2.y.from.end.trt + cat2.age.at.datafix, data = ads[ads$STUDYID == "AML05", ])
 numer.aml05.cat <- xtabs(followup.in.2y ~ cat2.y.from.end.trt + cat2.age.at.datafix, data = ads[ads$STUDYID == "AML05", ])
 rates.aml05.cat <- round(addmargins(numer.aml05.cat) / addmargins(denom.aml05.cat), 2)*100
