@@ -1,6 +1,6 @@
 ---
-title: "JCCG-LTFU Baseline_Background factors"
-author: "Mamiko Yonejima"
+title: "JCCG-LTFU Background factors"
+author: "Mamiko Yonejima, Toshiki Saito"
 date: "2017年4月11日"
 output:
   word_document: default
