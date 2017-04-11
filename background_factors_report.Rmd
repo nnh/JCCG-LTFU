@@ -1,0 +1,37 @@
+---
+title: "JCCG-LTFU Baseline_Background factors"
+author: "Mamiko Yonejima"
+date: "2017年4月11日"
+output:
+  word_document: default
+  pdf_document:
+    latex_engine: xelatex
+  html_document: default
+mainfont: Hiragino Kaku Gothic Pro
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+source("./programs/background_factors.R", encoding = "UTF-8")
+```
+
+実行日時：`r Sys.time()`
+
+## ベースライン
+##患者背景（データ固定２年前以前に死亡した症例を除いた患者集団の背景）
+### 年齢（診断時）
+```{r, echo=F}
+age.diagnosis
+```
+### 性別
+```{r, echo=F}
+sex 
+```
+### マーカー
+```{r, echo=F}
+marker
+```
+### 初診時のWBC
+```{r, echo=F}
+initial.wbc
+```
