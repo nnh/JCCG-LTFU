@@ -95,7 +95,7 @@ ads <- rbind(ads.all02, ads.aml05)
 ads$age.at.followup <- YearDif(ads$BRTHDTC, ads$DSSTDTC)  # 最終転帰更新日時点の年齢
 ads$age.at.datafix <- YearDif(ads$BRTHDTC, ads$fix.date)  # データ固定時の年齢
 ads$DTHFL <- as.logical(ads$DTHFL)
-missing.value <- ads[is.na(ads$DSSTDTC) | is.na(ads$BRTHDTC), ]  # 最終転帰更新日または生年月日が無い症例
+missing.value <- ads[is.na(ads$DSSTDTC) | is.na(ads$BRTHDTC), ]  # 最終転帰更新日または生年月日が無い症例  # TODO yonejima date.end.trtがNAの症例もmissing valueか確認
 ads <- ads[!is.na(ads$DSSTDTC) & !is.na(ads$BRTHDTC), ]
 
 # Save ADS(analysis data set)
