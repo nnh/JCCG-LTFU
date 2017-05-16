@@ -1,7 +1,6 @@
 ---
 title: "JCCG-LTFU Background factors"
 author: "Mamiko Yonejima, Toshiki Saito"
-date: "2017年4月11日"
 output:
   word_document: default
   pdf_document:
@@ -9,16 +8,32 @@ output:
   html_document: default
 mainfont: Hiragino Kaku Gothic Pro
 ---
+実行日時：`r Sys.time()`
 
 ```{r setup, include=FALSE}
 knitr::opts_chunk$set(echo = TRUE)
 source("./programs/background_factors.R", encoding = "UTF-8")
 ```
 
-実行日時：`r Sys.time()`
+##解析対象集団
+```{r, echo=F}
+nrow(ds.all02.bf.0)
+```
+##解析除外集団
+```{r, echo=F}
+nrow(missing.value.bf)
+```
+###解析除外集団の詳細・治療終了日不明
+```{r, echo=F}
+nrow(ds.all02.bf.0[ds.all02.bf.0$date.end.trt == "", ])
+```
+###解析除外集団の詳細・データ固定２年前以前に死亡した症例
+```{r, echo=F}
+nrow(ds.all02.bf.0[ds.all02.bf.0$no.death.before.2y ==F , ])
+```
 
-## ベースライン
-##患者背景（データ固定２年前以前に死亡した症例を除いた患者集団の背景）
+# ベースライン
+##患者背景（データ固定２年前以前に死亡した症例、治療終了日不明を除いた患者集団の背景）
 ### 年齢（診断時）
 ```{r, echo=F}
 age.diagnosis
@@ -35,3 +50,18 @@ marker
 ```{r, echo=F}
 initial.wbc
 ```
+##除外集団の患者背景
+### 年齢（診断時）
+```{r, echo=F}
+missing.value.age.diagnosis
+```
+### 性別
+```{r, echo=F}
+missing.value.sex
+```
+
+
+
+
+
+
