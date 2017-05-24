@@ -42,6 +42,14 @@ age.diagnosis
 ```{r, echo=F}
 sex 
 ```
+### 解析時年齢（データ固定時の年齢）
+```{r, echo=F}
+age.at.data.fixed
+```
+### 診断からの期間（診断～データ固定まで）
+```{r, echo=F}
+y.from.diagnosis
+```
 ### マーカー
 ```{r, echo=F}
 marker
@@ -59,9 +67,38 @@ missing.value.age.diagnosis
 ```{r, echo=F}
 missing.value.sex
 ```
+### 解析時年齢（データ固定時の年齢）
+```{r, echo=F}
+missing.value.age.at.data.fixed
+```
+### 診断からの期間（診断～データ固定まで）
+```{r, echo=F}
+missing.value.y.from.diagnosis
+```
+##追跡調査未提出の患者背景
+### 年齢（診断時）
+```{r, echo=F}
+not.sbmt.fu.bf.age.diagnosis
+```
+### 性別
+```{r, echo=F}
+not.sbmt.fu.bf.sex
+```
+### 解析時年齢（データ固定時の年齢）
+```{r, echo=F}
+not.sbmt.fu.age.at.data.fixed
+```
+### 診断からの期間（診断～データ固定まで）
+```{r, echo=F}
+not.sbmt.fu.y.from.diagnosis
+```
 
 
-
-
-
-
+## 参加施設数
+```{r, echo=F}
+count.facilities
+```
+## 施設分類別症例登録数
+```{r, echo=F}
+number.by.facilities
+```
