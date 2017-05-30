@@ -15,12 +15,12 @@ dxt.ads$age.diagnosis <- YearDif(dxt.ads$BRTHDTC, dxt.ads$MHSTDTC)
 JACLS$submit.fu <- "o"
 dxt.JACLS <- JACLS[, c(15, 193)]
 #ALL02から背景因子用にadsに不足しているデータを取り出し
-dxt.all02 <- ALL02[, c(2, 6, 8, 10, 29)]
+dxt.all02 <- ALL02[, c(2, 8, 10, 29)]
 #マージ
 ds.all02.bf.0 <- merge(dxt.ads, dxt.all02, by.x = "SUBJID", by.y = "JACLS登録コード", all.x = T)
 ds.all02.bf.0 <- merge(ds.all02.bf.0, dxt.JACLS, by.x = "SUBJID", by.y = "登録コード", all.x = T)
 #診断時からのデータ固定までの期間の列の作成
-ds.all02.bf.0$y.from.diagnosis <- YearDif(ds.all02.bf.0$診断年月日, ds.all02.bf.0$DSSTDTC)
+ds.all02.bf.0$y.from.diagnosis <- YearDif(ds.all02.bf.0$MHSTDTC, ds.all02.bf.0$fix.date)
                                                                                            
 #解析対象集団（データ固定2年前以前に死亡した人を除いた集団）の作成・計算
 ds.all02.bf <- ds.all02.bf.0[((ds.all02.bf.0$no.death.before.2y ==T) || (ds.all02.bf.0$date.end.trt != "")), ]
