@@ -7,6 +7,11 @@ source("./programs/make_ads.R", encoding = "UTF-8")
 ads$base.date <- ads$fix.date
 source("./programs/followup_rate.R", encoding = "UTF-8")
 
+#3桁コード、Ptoshコード、地区コード、地区名のデータセットを作成
+m.df <- merge(sites.all02, area, by.x = "site.code", by.y = "施設CD", all.x = T)
+m.df1 <- merge(m.df, facilities, by.x = "site.code", by.y = "施設CD", all.x = T)
+area.cd <- m.df1[,c("site.code", "医療機関CD", "地区CD", "area")]
+
 #adsからALL-02のデータだけ取り出す、診断時年齢追加
 dxt.ads <- ads[ads$STUDYID == "ALL02", ]
 dxt.ads$age.diagnosis <- YearDif(dxt.ads$BRTHDTC, dxt.ads$MHSTDTC) 
@@ -21,7 +26,13 @@ ds.all02.bf.0 <- merge(dxt.ads, dxt.all02, by.x = "SUBJID", by.y = "JACLS登録�
 ds.all02.bf.0 <- merge(ds.all02.bf.0, dxt.JACLS, by.x = "SUBJID", by.y = "登録コード", all.x = T)
 #診断時からのデータ固定までの期間の列の作成
 ds.all02.bf.0$y.from.diagnosis <- YearDif(ds.all02.bf.0$MHSTDTC, ds.all02.bf.0$fix.date)
-                                                                                           
+#age.at.datafixを21歳未満と、21歳以上に分ける   
+ds.all02.bf.0$cat.age.datafix <- cut(ds.all02.bf.0$age.at.datafix, breaks = c(0,21,150),
+                                               labels= c("<21", "21 <="), right=FALSE)
+
+#地区コードマージする
+ds.all02.bf.0　<- merge(ds.all02.bf.0, area.cd, by.x = "SITEID", by.y = "医療機関CD", all.x = T)
+                                                                                      
 #解析対象集団（データ固定2年前以前に死亡した人を除いた集団）の作成・計算
 ds.all02.bf <- ds.all02.bf.0[((ds.all02.bf.0$no.death.before.2y ==T) || (ds.all02.bf.0$date.end.trt != "")), ]
 age.diagnosis <- summary(ds.all02.bf$age.diagnosis)

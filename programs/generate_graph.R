@@ -53,6 +53,8 @@ for (i in 1:47) {
   denom3[i] <- sum(ads[ads5$SCSTRESC == i, ]$no.death.before.2y == T)
 }
 
+
+
 # 横軸に最終転帰更新日時点年齢、縦軸にフォローアップ率のグラフを記述する
 ads4 <- ads[!is.na(ads$age.at.followup), ]
 rate.age.followup <- NULL
@@ -111,3 +113,28 @@ barplot(rate.age.followup.all02, ylim=c(0:1), names.arg=c(1:x.max), family="sans
         main="Follow-up rate by age at follow-up, ALL02", xlab="Age at follow-up", ylab="Follow up rate")
 barplot(rate.age.followup.aml05, ylim=c(0:1), names.arg=c(1:x.max), family="sans",
         main="Follow-up rate by age at follow-up, AML05", xlab="Age at follow-up", ylab="Follow up rate")
+
+
+#横軸に地区、縦軸にFU率のグラフを記述する
+#地区別のdataframeでフォローアップ率を出す(21未満)
+ads.chiku.less.than21 <- ds.all02.bf.0[ds.all02.bf.0$cat.age.datafix == "<21", ]
+f.u.rate.chiku <- NULL
+denom.chiku <- NULL
+for (i in 1:8) {
+  f.u.rate.chiku[i] <- FollowupRate(ds.all02.bf.0[ads.chiku.less.than21$地区CD == i, ])
+  denom.chiku[i] <- sum(ds.all02.bf.0[ads.chiku.less.than21$地区CD == i, ]$no.death.before.2y == T)
+}
+area <- c("Hokkaido", "Tohoku", "Tokai", "Kansai", "Kyoto", "Chugoku,Shikoku ", "Kyusyu", "Other")
+barplot(f.u.rate.chiku, names.arg = area, family="sans", las=3, ylim=c(0:1),
+        main="Follow-up rate by area, less than 21years old", xlab="", ylab="Follow up rate", cex.names=0.7)
+#地区別のdataframeでフォローアップ率を出す(21以上)
+ads.chiku.over21 <- ds.all02.bf.0[ds.all02.bf.0$cat.age.datafix == "21 <=", ]
+f.u.rate.chiku1 <- NULL
+denom.chiku1 <- NULL
+for (i in 1:8) {
+  f.u.rate.chiku1[i] <- FollowupRate(ds.all02.bf.0[ads.chiku.over21$地区CD == i, ])
+  denom.chiku1[i] <- sum(ds.all02.bf.0[ads.chiku.over21$地区CD == i, ]$no.death.before.2y == T)
+}
+area <- c("Hokkaido", "Tohoku", "Tokai", "Kansai", "Kyoto", "Chugoku,Shikoku ", "Kyusyu", "Other")
+barplot(f.u.rate.chiku1, names.arg = area, family="sans", las=3, ylim=c(0:1),
+        main="Follow-up rate by area, over 21years old", xlab="", ylab="Follow up rate", cex.names=0.7)
