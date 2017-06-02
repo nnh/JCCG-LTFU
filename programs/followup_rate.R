@@ -50,3 +50,4 @@ ads$followup.in.2y <- ifelse((is.na(as.numeric(ads$y.from.last.update)) | as.num
 ads$no.death.before.2y <- ifelse((is.na(as.numeric(ads$y.from.death)) | as.numeric(ads$y.from.death) <= 2),
                                  T, F)  # 2年時点の死亡確認
 ads$y.from.end.trt <- YearDif(ads$date.end.trt, ads$base.date)  # 治療終了後年数
+setwd(".")

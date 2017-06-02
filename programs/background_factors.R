@@ -3,9 +3,7 @@
 # 2017/4/11
 ##################
 
-source("./programs/make_ads.R", encoding = "UTF-8")
-ads$base.date <- ads$fix.date
-source("./programs/followup_rate.R", encoding = "UTF-8")
+
 
 #3桁コード、Ptoshコード、地区コード、地区名のデータセットを作成
 m.df <- merge(sites.all02, area, by.x = "site.code", by.y = "施設CD", all.x = T)

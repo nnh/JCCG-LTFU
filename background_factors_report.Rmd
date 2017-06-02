@@ -12,6 +12,9 @@ mainfont: Hiragino Kaku Gothic Pro
 
 ```{r setup, include=FALSE}
 knitr::opts_chunk$set(echo = TRUE)
+source("./programs/make_ads.R", encoding = "UTF-8")
+ads$base.date <- ads$fix.date
+source("./programs/followup_rate.R", encoding = "UTF-8")
 source("./programs/background_factors.R", encoding = "UTF-8")
 ```
 
