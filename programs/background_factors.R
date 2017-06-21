@@ -8,14 +8,14 @@
 #3桁コード、Ptoshコード、地区コード、地区名のデータセットを作成
 m.df <- merge(sites.all02, area, by.x = "site.code", by.y = "施設CD", all.x = T)
 m.df1 <- merge(m.df, facilities, by.x = "site.code", by.y = "施設CD", all.x = T)
-area.cd <- m.df1[,c("site.code", "医療機関CD", "地区CD", "area")]
+area.cd <- m.df1[,c("site.code", "医療機関CD", "地区CD", "area3")]
 
 #adsからALL-02のデータだけ取り出す、診断時年齢追加
 dxt.ads <- ads[ads$STUDYID == "ALL02", ]
 dxt.ads$age.diagnosis <- YearDif(dxt.ads$BRTHDTC, dxt.ads$MHSTDTC) 
 
 #follow up提出状況確認
-JACLS$submit.fu <- "o"
+JACLS$submit.fu <- TRUE
 dxt.JACLS <- JACLS[, c(15, 193)]
 #ALL02から背景因子用にadsに不足しているデータを取り出し
 dxt.all02 <- ALL02[, c(2, 8, 10, 29)]
