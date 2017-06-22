@@ -58,7 +58,7 @@ t(data.frame(area, rates.all))
 
 ```{r, echo=F}
 barplot(f.u.rate.chiku.all, names.arg = area, family="sans", las=0, ylim=c(0:1),
-        main="Follow-up rate by area, less than 21years old", xlab="", ylab="Follow up rate", cex.names=0.7)
+        main="Follow-up rate by area, all", xlab="", ylab="Follow up rate", cex.names=0.7)
 ```
 
 ## ALL02フォローアップ率, 地区別,データ固定時の年齢21歳未満
