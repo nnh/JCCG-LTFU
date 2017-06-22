@@ -15,7 +15,6 @@ source("./programs/make_ads.R", encoding = "UTF-8")
 ads$base.date <- ads$fix.date
 source("./programs/followup_rate.R", encoding = "UTF-8")
 source("./programs/background_factors.R", encoding = "UTF-8")
-source("./programs/generate_graph.R", encoding = "UTF-8")
 ```
 
 実行日時：`r Sys.time()`
@@ -46,26 +45,62 @@ RatesAll02(ds.all02.bf.0[ds.all02.bf.0$性別 == "男" , ])
 ```{r, echo=F}
 RatesAll02(ds.all02.bf.0[ds.all02.bf.0$性別 == "女" , ])
 ```
-## ALL02フォローアップ率, 地区別,データ固定時の年齢21歳未満
+## ALL02フォローアップ率, 地区別, 全体
 ```{r, echo=F}
-data.frame(area, f.u.rate.chiku)
+print("denom.all02.area.all", quote = F)
+denom.all02.area.all
+print("numer.all02.area.all", quote = F)
+numer.all02.area.all
+print("rates.all02.area.all", quote = F)
+t(data.frame(area, rates.all))
+
 ```
 
 ```{r, echo=F}
-barplot(f.u.rate.chiku, names.arg = area, family="sans", las=3, ylim=c(0:1),
+barplot(f.u.rate.chiku.all, names.arg = area, family="sans", las=0, ylim=c(0:1),
         main="Follow-up rate by area, less than 21years old", xlab="", ylab="Follow up rate", cex.names=0.7)
 ```
 
+## ALL02フォローアップ率, 地区別,データ固定時の年齢21歳未満
+```{r, echo=F}
+print("denom.all02.area.less.than21", quote = F)
+denom.all02.area.less.than21
+print("numer.all02.area.less.than21", quote = F)
+numer.all02.area.less.than21
+print("rates.all02.area.less.than21", quote = F)
+t(data.frame(area, rates.less.than21))
+
+```
+
+```{r, echo=F}
+barplot(f.u.rate.chiku, names.arg = area, family="sans", las=0, ylim=c(0:1),
+        main="Follow-up rate by area, less than 21years old", xlab="", ylab="Follow up rate", cex.names=0.7)
+```
 
 ## ALL02フォローアップ率, 地区別,データ固定時の年齢21歳以上
 ```{r, echo=F}
-data.frame(area, f.u.rate.chiku1)
+print("denom.all02.area.over21", quote = F)
+denom.all02.area.over21
+print("numer.all02.area.over21", quote = F)
+numer.all02.area.over21
+print("rates.all02.area.over21", quote = F)
+t(data.frame(area, rates.over.than21))
 ```
 
 ```{r, echo=F}
-barplot(f.u.rate.chiku1, names.arg = area, family="sans", las=3, ylim=c(0:1),
+barplot(f.u.rate.chiku1, names.arg = area, family="sans", las=0, ylim=c(0:1),
         main="Follow-up rate by area, 21years old and more", xlab="", ylab="Follow up rate", cex.names=0.7)
 ```
+
+### 地区詳細
+| code | Area                     |
+|------|--------------------------|
+| A    | Hokkaido                 |
+| B    | Tokai                    |
+| C    | Kansai                   |
+| D    | Chugoku, Shikoku, Kyusyu |
+| E    | Kyoto                    |
+| F    | Tohoku                   |
 
 ### AML05フォローアップ率, 全施設
 ```{r, echo=F}

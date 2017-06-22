@@ -18,11 +18,11 @@ source("./programs/followup_rate.R", encoding = "UTF-8")
 source("./programs/background_factors.R", encoding = "UTF-8")
 ```
 
-##解析対象集団
+## ALL02に登録された症例数
 ```{r, echo=F}
 nrow(ds.all02.bf.0)
 ```
-##解析除外集団
+## ALL02に登録された症例の内、解析から除外された症例数（解析除外集団）
 ```{r, echo=F}
 nrow(missing.value.bf)
 ```

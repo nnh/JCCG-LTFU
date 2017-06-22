@@ -1,3 +1,8 @@
+FollowupRate <- function(dataframe) {
+  # フォローアップ率を作る関数
+  sum(dataframe$followup.in.2y == T) / sum(dataframe$no.death.before.2y == T)
+}
+
 RatesAml05 <- function(dataframe) {
   # AML05カテゴリー化
   denom.aml05 <- xtabs(no.death.before.2y ~ y.from.end.trt + age.at.datafix, data = dataframe)
@@ -40,6 +45,7 @@ RatesAll02 <- function(dataframe) {
   print("rates.all02.cat", quote = F)
   print(rates.all02.cat)
 }
+
 # follow-up率算出用変数作成
 ads$y.from.last.update <- YearDif(ads$DSSTDTC, ads$base.date)  #フォローアップ率算出基準日-最終確認日が入る
 for (i in 1:length(ads$SUBJID)) {
@@ -50,4 +56,6 @@ ads$followup.in.2y <- ifelse((is.na(as.numeric(ads$y.from.last.update)) | as.num
 ads$no.death.before.2y <- ifelse((is.na(as.numeric(ads$y.from.death)) | as.numeric(ads$y.from.death) <= 2),
                                  T, F)  # 2年時点の死亡確認
 ads$y.from.end.trt <- YearDif(ads$date.end.trt, ads$base.date)  # 治療終了後年数
+
+
 setwd(".")

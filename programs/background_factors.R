@@ -60,6 +60,47 @@ colnames(shisetsu.mat) <- colnames(shisetsu)
 shisetsu.mat.0 <- ifelse(shisetsu.mat != 0, 1, 0)
 count.facilities <- apply(shisetsu.mat.0, 2, sum)
 
+#地区別のdataframeでフォローアップ率を出す(all cases)
+area <- c("A", "B", "C", "D", "E", "F")
+ds.all02.bf.1 <- ds.all02.bf.0[ds.all02.bf.0$area3 != "Other", ]
+## denom/numberを計算
+denom.all02.area.all <- xtabs(no.death.before.2y ~ no.death.before.2y + area3, data = ds.all02.bf.1)
+numer.all02.area.all <- xtabs(followup.in.2y ~ followup.in.2y + area3, data = ds.all02.bf.1)
+## フォローアップ率
+f.u.rate.chiku.all <- NULL
+denom.chiku.all <- NULL
+for (i in 1:6) {
+  f.u.rate.chiku.all[i] <- FollowupRate(ds.all02.bf.1[ds.all02.bf.1$地区CD == i, ])
+}
+rates.all <- round(f.u.rate.chiku.all*100)
+
+
+# 地区別のdataframeでフォローアップ率を出す(21未満)
+ads.chiku.less.than21 <- ds.all02.bf.1[ds.all02.bf.1$cat.age.datafix == "<21", ]
+## denom/numberを計算
+denom.all02.area.less.than21 <- xtabs(no.death.before.2y ~ no.death.before.2y + area3, data = ads.chiku.less.than21)
+numer.all02.area.less.than21 <- xtabs(followup.in.2y ~ followup.in.2y + area3, data = ads.chiku.less.than21)
+## フォローアップ率
+f.u.rate.chiku <- NULL
+denom.chiku <- NULL
+for (i in 1:6) {
+  f.u.rate.chiku[i] <- FollowupRate(ads.chiku.less.than21[ads.chiku.less.than21$地区CD == i, ])
+}
+rates.less.than21 <- round(f.u.rate.chiku*100)
+
+#地区別のdataframeでフォローアップ率を出す(21以上)
+ads.chiku.over21 <- ds.all02.bf.1[ds.all02.bf.1$cat.age.datafix == "21 <=", ]
+## denom/numberを計算
+denom.all02.area.over21 <- xtabs(no.death.before.2y ~ no.death.before.2y + area3, data = ads.chiku.over21)
+numer.all02.area.over21 <- xtabs(followup.in.2y ~ followup.in.2y + area3, data = ads.chiku.over21)
+## フォローアップ率
+f.u.rate.chiku1 <- NULL
+denom.chiku1 <- NULL
+for (i in 1:6) {
+  f.u.rate.chiku1[i] <- FollowupRate(ads.chiku.over21[ads.chiku.over21$地区CD == i, ])
+}
+rates.over.than21 <- round(f.u.rate.chiku1*100)
+
 setwd("./output")
 write.csv(ds.all02.bf.0, "background.csv", row.names = F)
 

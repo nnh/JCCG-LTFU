@@ -1,7 +1,4 @@
-FollowupRate <- function(dataframe) {
-  # フォローアップ率を作る関数
-  sum(dataframe$followup.in.2y == T) / sum(dataframe$no.death.before.2y == T)
-}
+
 # 横軸に治療後年数、縦軸にフォローアップ率のグラフを記述する
 ads1 <- ads[!is.na(ads$y.from.end.trt), ]
 rate.end.trt <- NULL
@@ -115,27 +112,4 @@ for (i in 1:x.max) {
 #         main="Follow-up rate by age at follow-up, AML05", xlab="Age at follow-up", ylab="Follow up rate")
 
 
-#横軸に地区、縦軸にFU率のグラフを記述する
-#地区別のdataframeでフォローアップ率を出す(21未満)
-ds.all02.bf.1 <- ds.all02.bf.0[ds.all02.bf.0$area3 != "Other", ]
-ads.chiku.less.than21 <- ds.all02.bf.1[ds.all02.bf.1$cat.age.datafix == "<21", ]
-f.u.rate.chiku <- NULL
-denom.chiku <- NULL
-for (i in 1:6) {
-  f.u.rate.chiku[i] <- FollowupRate(ads.chiku.less.than21[ads.chiku.less.than21$地区CD == i, ])
- # denom.chiku[i] <- sum(ds.all02.bf.0[ads.chiku.less.than21$地区CD == i, ]$no.death.before.2y == T)
-}
-area <- c("A", "B", "C", "D", "E", "F")
-# barplot(f.u.rate.chiku, names.arg = area, family="sans", las=3, ylim=c(0:1),
-#         main="Follow-up rate by area, less than 21years old", xlab="", ylab="Follow up rate", cex.names=0.7)
-#地区別のdataframeでフォローアップ率を出す(21以上)
-ads.chiku.over21 <- ds.all02.bf.1[ds.all02.bf.1$cat.age.datafix == "21 <=", ]
-f.u.rate.chiku1 <- NULL
-denom.chiku1 <- NULL
-for (i in 1:6) {
-  f.u.rate.chiku1[i] <- FollowupRate(ads.chiku.over21[ads.chiku.over21$地区CD == i, ])
-  # denom.chiku1[i] <- sum(ds.all02.bf.0[ads.chiku.over21$地区CD == i, ]$no.death.before.2y == T)
-}
-# area <- c("Hokkaido", "Tokai", "Kansai", "Chugoku_Shikoku", "Kyusyu", "Kyoto", "Tohoku", "Other")
-# barplot(f.u.rate.chiku1, names.arg = area, family="sans", las=3, ylim=c(0:1),
-#         main="Follow-up rate by area, over 21years old", xlab="", ylab="Follow up rate", cex.names=0.7)
+
