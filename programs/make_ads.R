@@ -36,18 +36,17 @@ for (i in 1:length(filenames)) {
 setwd("..")
 
 #site.code と hospitaltypeのデータセット作成
-facilities.all02 <- merge(sites.all02, facilities, by.x = "site.code", by.y = "施設CD", all.x = T)
-facilities.aml05 <- merge(sites.aml05, facilities, by.x = "site.code", by.y = "施設CD", all.x = T)
+facilities.all02 <- merge(sites.all02, facilities, by.x = "site.code", by.y = "code_3digit", all.x = T)
+facilities.aml05 <- merge(sites.aml05, facilities, by.x = "site.code", by.y = "code_3digit", all.x = T)
 
 # Make ADS(Analysis Data Set) for JACLS-ALL-02
 jacls.registration <- regis[c("現施設名", "登録コード", "生年月日", "最終確認日")]
-jacls.registration.1 <- merge(jacls.registration, facilities.all02, by.x = "現施設名", by.y = "施設名.y", all.x = T)
+jacls.registration.1 <- merge(jacls.registration, facilities.all02, by.x = "現施設名", by.y = "facilities", all.x = T)
 all02.pick0 <- ALL02[c("JACLS登録コード", "診断年月日", "治療終了日")]
 all02.pick <- merge(all02.pick0, jacls.registration.1, by.x="JACLS登録コード", by.y="登録コード", all.x=T)
-#merge.02.facil <- merge(all02.pick, facil, by.x="現施設名", by.y="施設名", all.x=T)
 merge.JACLS <- merge(all02.pick, JACLS, by.x="JACLS登録コード", by.y="登録コード", all.x=T)
-merge.JACLS$SCSTRESC <- floor(as.numeric(merge.JACLS$医療機関CD) / 10000000)  # 施設コードの上2桁が県コード
-ads.all02 <- merge.JACLS[c("JACLS登録コード", "診断年月日", "治療終了日", "生年月日.x", "生死", "死亡日", "最終確認日.x", "医療機関CD", "SCSTRESC", "hospital.type")]
+merge.JACLS$SCSTRESC <- floor(as.numeric(merge.JACLS$code_9digit) / 10000000)  # 施設コードの上2桁が県コード
+ads.all02 <- merge.JACLS[c("JACLS登録コード", "診断年月日", "治療終了日", "生年月日.x", "生死", "死亡日", "最終確認日.x", "code_9digit", "SCSTRESC", "hospital.type")]
 names(ads.all02)[c(1:8)] <- c("SUBJID", "MHSTDTC", "date.end.trt", "BRTHDTC", "DTHFL", "DTHDTC", "DSSTDTC", "SITEID")
 ads.all02$DTHFL[ads.all02$DTHFL == "true"] <- T
 ads.all02$DTHFL[ads.all02$DTHFL == "false"] <- F
@@ -68,10 +67,9 @@ for (i in 1:length(aml05.pick$J_CD)) {
 }
 aml05.pick1 <- aml05.pick[c("J_CD", "診断日", "死亡.有り無し", "最終確認日", "date.end.trt")]
 names(aml05.pick1)[4] <- "AML05最終確認日"
-#merge.JPLSG <- merge(JPLSG, facil, by.x="現施設名", by.y="施設名", all.x=T)
-merge.JPLSG <- merge(JPLSG, facilities.aml05, by.x = "現施設名", by.y = "施設名.y", all.x = T)
-merge.JPLSG$SCSTRESC <- floor(as.numeric(merge.JPLSG$医療機関CD) / 10000000)  # 施設コードの上2桁が県コード
-jplsg.pick <- merge.JPLSG[c("登録コード", "生年月日", "生死", "死亡日", "最終確認日", "SCSTRESC", "医療機関CD", "hospital.type")]
+merge.JPLSG <- merge(JPLSG, facilities.aml05, by.x = "現施設名", by.y = "facilities", all.x = T)
+merge.JPLSG$SCSTRESC <- floor(as.numeric(merge.JPLSG$code_9digit) / 10000000)  # 施設コードの上2桁が県コード
+jplsg.pick <- merge.JPLSG[c("登録コード", "生年月日", "生死", "死亡日", "最終確認日", "SCSTRESC", "code_9digit", "hospital.type")]
 merge2 <- merge(aml05.pick1, jplsg.pick, by.x="J_CD", by.y="登録コード", all.x=T)
 merge2$DTHFL <- ifelse(merge2$死亡.有り無し == "1", T, merge2$生死)
 merge2$DTHFL[merge2$DTHFL == "true"] <- T
@@ -86,7 +84,7 @@ for (i in 1:length(merge2$J_CD)) {
   }
 }
 merge2$DSSTDTC <- ifelse((merge2$最終確認日 == ""), merge2$AML05最終確認日, merge2$最終確認日)
-ads.aml05 <- merge2[c("J_CD", "診断日", "date.end.trt", "生年月日", "DTHFL", "DTHDTC", "DSSTDTC","医療機関CD", "SCSTRESC", "hospital.type")]
+ads.aml05 <- merge2[c("J_CD", "診断日", "date.end.trt", "生年月日", "DTHFL", "DTHDTC", "DSSTDTC","code_9digit", "SCSTRESC", "hospital.type")]
 names(ads.aml05)[c(1, 2, 4, 8)] <- c("SUBJID", "MHSTDTC", "BRTHDTC", "SITEID")
 ads.aml05$STUDYID <- "AML05"
 ads.aml05$fix.date <- kFixDateAml05

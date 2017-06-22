@@ -7,9 +7,9 @@
 
 #3桁コード、Ptoshコード、地区コード、地区名のデータセットを作成
 m.df <- merge(sites.all02, area, by.x = "site.code", by.y = "施設CD", all.x = T)
-m.df1 <- merge(m.df, facilities, by.x = "site.code", by.y = "施設CD", all.x = T)
-area.cd <- m.df1[,c("site.code", "医療機関CD", "地区CD", "area3")]
-
+m.df1 <- merge(m.df, facilities, by.x = "site.code", by.y = "code_3digit", all.x = T)
+area.cd <- m.df1[,c("site.code", "code_9digit", "地区CD", "area3")]
+area.cd <- area.cd[-27, ]  #  成育医療センターが二個できてしまうため、削除するためのコード
 #adsからALL-02のデータだけ取り出す、診断時年齢追加
 dxt.ads <- ads[ads$STUDYID == "ALL02", ]
 dxt.ads$age.diagnosis <- YearDif(dxt.ads$BRTHDTC, dxt.ads$MHSTDTC) 
@@ -29,8 +29,8 @@ ds.all02.bf.0$cat.age.datafix <- cut(ds.all02.bf.0$age.at.datafix, breaks = c(0,
                                                labels= c("<21", "21 <="), right=FALSE)
 
 #地区コードマージする
-ds.all02.bf.0　<- merge(ds.all02.bf.0, area.cd, by.x = "SITEID", by.y = "医療機関CD", all.x = T)
-                                                                                      
+ds.all02.bf.0 <- merge(ds.all02.bf.0, area.cd, by.x = "SITEID", by.y = "code_9digit", all.x = T) #TODO
+
 #解析対象集団（データ固定2年前以前に死亡した人を除いた集団）の作成・計算
 ds.all02.bf <- ds.all02.bf.0[((ds.all02.bf.0$no.death.before.2y ==T) || (ds.all02.bf.0$date.end.trt != "")), ]
 age.diagnosis <- summary(ds.all02.bf$age.diagnosis)
