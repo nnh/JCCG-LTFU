@@ -8,7 +8,7 @@
 #3桁コード、Ptoshコード、地区コード、地区名のデータセットを作成
 m.df <- merge(sites.all02, area, by.x = "site.code", by.y = "施設CD", all.x = T)
 m.df1 <- merge(m.df, facilities, by.x = "site.code", by.y = "code_3digit", all.x = T)
-area.cd <- m.df1[,c("site.code", "code_9digit", "地区CD", "area3")]
+area.cd <- m.df1[,c("site.code", "code_9digit", "地区CD", "area")]
 area.cd <- area.cd[-27, ]  #  成育医療センターが二個できてしまうため、削除するためのコード
 #adsからALL-02のデータだけ取り出す、診断時年齢追加
 dxt.ads <- ads[ads$STUDYID == "ALL02", ]
@@ -62,10 +62,10 @@ count.facilities <- apply(shisetsu.mat.0, 2, sum)
 
 #地区別のdataframeでフォローアップ率を出す(all cases)
 area <- c("A", "B", "C", "D", "E", "F")
-ds.all02.bf.1 <- ds.all02.bf.0[ds.all02.bf.0$area3 != "Other", ]
+ds.all02.bf.1 <- ds.all02.bf.0[ds.all02.bf.0$area != "Other", ]
 ## denom/numberを計算
-denom.all02.area.all <- xtabs(no.death.before.2y ~ no.death.before.2y + area3, data = ds.all02.bf.1)
-numer.all02.area.all <- xtabs(followup.in.2y ~ followup.in.2y + area3, data = ds.all02.bf.1)
+denom.all02.area.all <- xtabs(no.death.before.2y ~ no.death.before.2y + area, data = ds.all02.bf.1)
+numer.all02.area.all <- xtabs(followup.in.2y ~ followup.in.2y + area, data = ds.all02.bf.1)
 ## フォローアップ率
 f.u.rate.chiku.all <- NULL
 denom.chiku.all <- NULL
@@ -78,8 +78,8 @@ rates.all <- round(f.u.rate.chiku.all*100)
 # 地区別のdataframeでフォローアップ率を出す(21未満)
 ads.chiku.less.than21 <- ds.all02.bf.1[ds.all02.bf.1$cat.age.datafix == "<21", ]
 ## denom/numberを計算
-denom.all02.area.less.than21 <- xtabs(no.death.before.2y ~ no.death.before.2y + area3, data = ads.chiku.less.than21)
-numer.all02.area.less.than21 <- xtabs(followup.in.2y ~ followup.in.2y + area3, data = ads.chiku.less.than21)
+denom.all02.area.less.than21 <- xtabs(no.death.before.2y ~ no.death.before.2y + area, data = ads.chiku.less.than21)
+numer.all02.area.less.than21 <- xtabs(followup.in.2y ~ followup.in.2y + area, data = ads.chiku.less.than21)
 ## フォローアップ率
 f.u.rate.chiku <- NULL
 denom.chiku <- NULL
@@ -91,8 +91,8 @@ rates.less.than21 <- round(f.u.rate.chiku*100)
 #地区別のdataframeでフォローアップ率を出す(21以上)
 ads.chiku.over21 <- ds.all02.bf.1[ds.all02.bf.1$cat.age.datafix == "21 <=", ]
 ## denom/numberを計算
-denom.all02.area.over21 <- xtabs(no.death.before.2y ~ no.death.before.2y + area3, data = ads.chiku.over21)
-numer.all02.area.over21 <- xtabs(followup.in.2y ~ followup.in.2y + area3, data = ads.chiku.over21)
+denom.all02.area.over21 <- xtabs(no.death.before.2y ~ no.death.before.2y + area, data = ads.chiku.over21)
+numer.all02.area.over21 <- xtabs(followup.in.2y ~ followup.in.2y + area, data = ads.chiku.over21)
 ## フォローアップ率
 f.u.rate.chiku1 <- NULL
 denom.chiku1 <- NULL
