@@ -31,8 +31,8 @@ RatesAll02 <- function(dataframe) {
   rates.all02 <- round(addmargins(numer.all02) / addmargins(denom.all02), 2)*100
   dataframe$cat.age.at.datafix <- cut(dataframe$age.at.datafix, breaks = c(6,9,13,17,21,25,30),
                                 labels= c("6-8","9-12","13-16","17-20","21-24","25-29"), right=FALSE)
-  dataframe$cat.y.from.end.trt <- cut(dataframe$y.from.end.trt, breaks = c(3,5,7,9,11,14),
-                               labels= c("3-4","5-6","7-8","9-10","11-13"), right=FALSE)
+  dataframe$cat.y.from.end.trt <- cut(dataframe$y.from.end.trt, breaks = c(3,5,7,9,11,14,16),
+                               labels= c("3-4","5-6","7-8","9-10","11-13","14-16"), right=FALSE)
   denom.all02.cat <- xtabs(no.death.before.2y ~ cat.y.from.end.trt + cat.age.at.datafix, data = dataframe)
   numer.all02.cat <- xtabs(followup.in.2y ~ cat.y.from.end.trt + cat.age.at.datafix, data = dataframe)
   rates.all02.cat <- round(addmargins(numer.all02.cat) / addmargins(denom.all02.cat), 2)*100

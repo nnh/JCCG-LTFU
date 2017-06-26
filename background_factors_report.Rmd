@@ -78,7 +78,16 @@ missing.value.age.at.data.fixed
 ```{r, echo=F}
 missing.value.y.from.diagnosis
 ```
-##追跡調査未提出の患者背景
+## 追跡調査
+### 解析対象集団の追跡調査提出状況(未提出はNA)
+```{r, echo=F}
+fu.missing.v
+```
+### 除外集団の追跡調提出状況(未提出はNA)
+```{r, echo=F}
+fu.ads
+```
+##追跡調査未提出の全ての症例の患者背景
 ### 年齢（診断時）
 ```{r, echo=F}
 not.sbmt.fu.bf.age.diagnosis
