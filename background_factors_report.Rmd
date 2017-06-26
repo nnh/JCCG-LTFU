@@ -81,11 +81,11 @@ missing.value.y.from.diagnosis
 ## 追跡調査
 ### 解析対象集団の追跡調査提出状況(未提出はNA)
 ```{r, echo=F}
-fu.missing.v
+fu.ads
 ```
 ### 除外集団の追跡調提出状況(未提出はNA)
 ```{r, echo=F}
-fu.ads
+fu.missing.v
 ```
 ##追跡調査未提出の全ての症例の患者背景
 ### 年齢（診断時）
