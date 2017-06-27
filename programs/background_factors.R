@@ -57,7 +57,7 @@ not.sbmt.fu.age.at.data.fixed <- summary(not.sbmt.fu.bf$age.at.datafix)
 not.sbmt.fu.y.from.diagnosis <- summary(not.sbmt.fu.bf$y.from.diagnosis)
 #facititiesの詳細
 number.by.facilities <- table(ds.all02.bf$hospital.type, useNA="always")
-shisetsu <- xtabs( ~ SCSTRESC + hospital.type, data = ds.all02.bf)
+shisetsu <- xtabs( ~ SITEID + hospital.type, data = ds.all02.bf)
 shisetsu.mat <- matrix(shisetsu, nrow(shisetsu), ncol(shisetsu))
 colnames(shisetsu.mat) <- colnames(shisetsu)
 shisetsu.mat.0 <- ifelse(shisetsu.mat != 0, 1, 0)
