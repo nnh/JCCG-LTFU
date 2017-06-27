@@ -30,10 +30,10 @@ ds.all02.bf.0$cat.age.datafix <- cut(ds.all02.bf.0$age.at.datafix, breaks = c(0,
                                                labels= c("<21", "21 <="), right=FALSE)
 
 #地区コードマージする
-ds.all02.bf.0 <- merge(ds.all02.bf.0, area.cd, by.x = "SITEID", by.y = "code_9digit", all = T)  # ds.all02.bf.0は1252例
+ds.all02.bf.0 <- merge(ds.all02.bf.0, area.cd, by.x = "SITEID", by.y = "code_9digit", all.x = T)  # ds.all02.bf.0は1252例
 
 #解析対象集団（データ固定2年前以前に死亡した人を除いた集団）の作成・計算
-ds.all02.bf <- ds.all02.bf.0[ds.all02.bf.1$no.death.before.2y ==T & ds.all02.bf.1$date.end.trt != "", ] #  ds.all02.bfは962例
+ds.all02.bf <- ds.all02.bf.0[ds.all02.bf.0$no.death.before.2y ==T & ds.all02.bf.0$date.end.trt != "", ] #  ds.all02.bfは962例
 age.diagnosis <- summary(ds.all02.bf$age.diagnosis)
 sex <- table(ds.all02.bf$性別)
 marker <- table(ds.all02.bf$マーカー)
