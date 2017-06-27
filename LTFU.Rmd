@@ -39,11 +39,11 @@ RatesAll02(ads[ads$STUDYID == "ALL02" & ads$hospital.type == "Children's Hospita
 ```
 ### ALL02フォローアップ率,全施設, male
 ```{r, echo=F}
-RatesAll02(ds.all02.bf[ds.all02.bf.0$性別 == "男" , ])
+RatesAll02(ds.all02.bf[ds.all02.bf$性別 == "男" , ])
 ```
 ### ALL02フォローアップ率,全施設, female
 ```{r, echo=F}
-RatesAll02(ds.all02.bf[ds.all02.bf.0$性別 == "女" , ])
+RatesAll02(ds.all02.bf[ds.all02.bf$性別 == "女" , ])
 ```
 ## ALL02フォローアップ率, 地区別, 全体
 ```{r, echo=F}
